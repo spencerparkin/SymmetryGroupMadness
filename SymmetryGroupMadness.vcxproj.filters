@@ -5,15 +5,27 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Code\c3ga">
+      <UniqueIdentifier>{e6c4c082-d84a-415c-9b59-90cf55bbbacb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Application.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\c3ga\c3ga.h">
+      <Filter>Code\c3ga</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Application.cpp">
       <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\c3ga\c3ga.cpp">
+      <Filter>Code\c3ga</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp">
+      <Filter>Code\c3ga</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
