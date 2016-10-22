@@ -27,3 +27,13 @@
 *.exe
 *.out
 *.app
+
+# Intermediates/targets
+Debug/
+
+# Dev-studio stuff
+*.suo
+*.opensdf
+*.sdf
+*.user
+.vs/
