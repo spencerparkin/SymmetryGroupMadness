@@ -147,11 +147,21 @@
   <ItemGroup>
     <ClInclude Include="Code\Application.h" />
     <ClInclude Include="Code\c3ga\c3ga.h" />
+    <ClInclude Include="Code\Line.h" />
+    <ClInclude Include="Code\Puzzle.h" />
+    <ClInclude Include="Code\Shape.h" />
+    <ClInclude Include="Code\Triangle.h" />
+    <ClInclude Include="Code\List.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Application.cpp" />
     <ClCompile Include="Code\c3ga\c3ga.cpp" />
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp" />
+    <ClCompile Include="Code\Line.cpp" />
+    <ClCompile Include="Code\List.cpp" />
+    <ClCompile Include="Code\Puzzle.cpp" />
+    <ClCompile Include="Code\Shape.cpp" />
+    <ClCompile Include="Code\Triangle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

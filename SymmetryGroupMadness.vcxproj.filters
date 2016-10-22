@@ -16,6 +16,21 @@
     <ClInclude Include="Code\c3ga\c3ga.h">
       <Filter>Code\c3ga</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Triangle.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Line.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Puzzle.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Shape.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\List.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Application.cpp">
@@ -26,6 +41,21 @@
     </ClCompile>
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp">
       <Filter>Code\c3ga</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Triangle.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Puzzle.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Line.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\List.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Shape.cpp">
+      <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
