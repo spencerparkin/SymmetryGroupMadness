@@ -4,6 +4,9 @@
 
 #include <wx/app.h>
 
+class Frame;
+class Puzzle;
+
 class Application : public wxApp
 {
 public:
@@ -13,6 +16,9 @@ public:
 
 	virtual bool OnInit( void ) override;
 	virtual int OnExit( void ) override;
+
+	Frame* frame;
+	Puzzle* puzzle;
 };
 
 wxDECLARE_APP( Application );

@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="Code\Application.h" />
     <ClInclude Include="Code\c3ga\c3ga.h" />
+    <ClInclude Include="Code\Frame.h" />
     <ClInclude Include="Code\Line.h" />
     <ClInclude Include="Code\Puzzle.h" />
     <ClInclude Include="Code\Shape.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Code\Application.cpp" />
     <ClCompile Include="Code\c3ga\c3ga.cpp" />
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp" />
+    <ClCompile Include="Code\Frame.cpp" />
     <ClCompile Include="Code\Line.cpp" />
     <ClCompile Include="Code\List.cpp" />
     <ClCompile Include="Code\Puzzle.cpp" />

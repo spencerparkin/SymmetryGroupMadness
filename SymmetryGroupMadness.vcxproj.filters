@@ -31,6 +31,9 @@
     <ClInclude Include="Code\List.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Frame.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Application.cpp">
@@ -55,6 +58,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\Shape.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Frame.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

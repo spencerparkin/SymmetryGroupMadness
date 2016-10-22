@@ -8,6 +8,18 @@
 Puzzle::Puzzle( void )
 {
 	triangleList = new TriangleList();
+
+	Triangle* triangle = new Triangle();
+	triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, -10.0, 0.0 );
+	triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, -10.0, 0.0 );
+	triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, 10.0, 0.0 );
+	triangleList->push_back( triangle );
+
+	triangle = new Triangle();
+	triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, -10.0, 0.0 );
+	triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, 10.0, 0.0 );
+	triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, 10.0, 0.0 );
+	triangleList->push_back( triangle );
 }
 
 /*virtual*/ Puzzle::~Puzzle( void )
