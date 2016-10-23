@@ -3,7 +3,7 @@
 #include "Puzzle.h"
 #include "Shape.h"
 #include "Triangle.h"
-#include "Line.h"
+#include "LineSegment.h"
 
 Puzzle::Puzzle( void )
 {
@@ -32,24 +32,30 @@ void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 {
 	const TriangleList& shapeTriangleList = shape.GetTriangleList();
 
-	LineList lineList;
+	LineSegmentList lineSegmentList;
 
 	for( TriangleList::const_iterator iter = shapeTriangleList.begin(); iter != shapeTriangleList.end(); iter++ )
 	{
 		const Triangle* shapeTriangle = *iter;
-		shapeTriangle->GetLines( lineList );
+		shapeTriangle->MakeLineSegments( lineSegmentList );
 	}
 
-	while( lineList.size() > 0 )
+	while( lineSegmentList.size() > 0 )
 	{
-		LineList::iterator iter = lineList.begin();
-		Line* line = *iter;
+		LineSegmentList::iterator iter = lineSegmentList.begin();
+		LineSegment* lineSegment = *iter;
 
-		CutTriangles( *line );
+		CutTriangles( *lineSegment );
 
-		lineList.erase( iter );
-		delete line;
+		lineSegmentList.erase( iter );
+		delete lineSegment;
 	}
+
+	// At this point we might consider a compression pass.  It's possible that two
+	// adjacent triangles can be merged into a single triangle.  This would be O(n^2)
+	// unless we kept track of adjacencies using a graph, but that makes our data-structure
+	// quite a bit more complicated.  If at all, I would only add this optimization later
+	// after everything was working, and only if I thought we could benefit from it.
 
 	for( TriangleList::const_iterator iter = shapeTriangleList.begin(); iter != shapeTriangleList.end(); iter++ )
 	{
@@ -58,7 +64,7 @@ void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 	}
 }
 
-void Puzzle::CutTriangles( const Line& line )
+void Puzzle::CutTriangles( const LineSegment& lineSegment )
 {
 	TriangleList* newTriangleList = new TriangleList();
 
@@ -68,7 +74,7 @@ void Puzzle::CutTriangles( const Line& line )
 		Triangle* triangle = *iter;
 		triangleList->erase( iter );
 
-		if( line.CutTriangle( *triangle, *newTriangleList ) )
+		if( lineSegment.CutTriangle( *triangle, *newTriangleList ) )
 			delete triangle;
 		else
 			newTriangleList->push_back( triangle );

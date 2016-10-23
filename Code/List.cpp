@@ -2,16 +2,16 @@
 
 #include "List.h"
 #include "Triangle.h"
-#include "Line.h"
+#include "LineSegment.h"
 
-void DeleteLineList( LineList& lineList )
+void DeleteLineSegmentList( LineSegmentList& lineSegmentList )
 {
-	while( lineList.size() > 0 )
+	while( lineSegmentList.size() > 0 )
 	{
-		LineList::iterator iter = lineList.begin();
-		Line* line = *iter;
-		delete line;
-		lineList.erase( iter );
+		LineSegmentList::iterator iter = lineSegmentList.begin();
+		LineSegment* lineSegment = *iter;
+		delete lineSegment;
+		lineSegmentList.erase( iter );
 	}
 }
 

@@ -19,9 +19,6 @@
     <ClInclude Include="Code\Triangle.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Line.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Puzzle.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -32,6 +29,9 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Frame.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\LineSegment.h">
       <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,9 +51,6 @@
     <ClCompile Include="Code\Puzzle.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Line.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\List.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -61,6 +58,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\Frame.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\LineSegment.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

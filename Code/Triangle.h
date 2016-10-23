@@ -12,9 +12,10 @@ public:
 	Triangle( void );
 	virtual ~Triangle( void );
 
-	void GetLines( LineList& lineList ) const;
+	void MakeLineSegments( LineSegmentList& lineSegmentList ) const;
 
 	bool Covers( const Triangle& triangle ) const;
+	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
 
 	struct Vertex
 	{

@@ -5,7 +5,7 @@
 #include "List.h"
 
 class Shape;
-class Line;
+class LineSegment;
 class Triangle;
 
 class Puzzle
@@ -19,7 +19,7 @@ public:
 
 private:
 
-	void CutTriangles( const Line& line );
+	void CutTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 
 	TriangleList* triangleList;
