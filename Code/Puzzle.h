@@ -17,12 +17,19 @@ public:
 
 	void GrabShape( const Shape& shape, TriangleList& grabbedTriangleList );
 
+	void Render( int mode );
+
+	// We want to know which shape and which triangle of the shape is selected.
+	//void ProcessHitRecords
+
 private:
 
 	void CutTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 
 	TriangleList* triangleList;
+
+	ShapeList shapeList;
 };
 
 // Puzzle.h

@@ -26,6 +26,8 @@ Puzzle::Puzzle( void )
 {
 	DeleteTriangleList( *triangleList );
 	delete triangleList;
+
+	DeleteShapeList( shapeList );
 }
 
 void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
@@ -92,6 +94,10 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 		if( triangleCover.Covers( *triangle ) )
 			collectedTriangleList.push_back( triangle );
 	}
+}
+
+void Puzzle::Render( int mode )
+{
 }
 
 // Puzzle.cpp
