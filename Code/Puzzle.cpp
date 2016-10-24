@@ -7,6 +7,8 @@
 
 Puzzle::Puzzle( void )
 {
+	modified = false;
+
 	triangleList = new TriangleList();
 
 	Triangle* triangle = new Triangle();
@@ -32,6 +34,8 @@ Puzzle::Puzzle( void )
 
 void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 {
+	modified = true;
+
 	const TriangleList& shapeTriangleList = shape.GetTriangleList();
 
 	LineSegmentList lineSegmentList;
@@ -98,6 +102,39 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 
 void Puzzle::Render( int mode )
 {
+}
+
+void Puzzle::ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount )
+{
+}
+
+bool Puzzle::Save( void )
+{
+	return false;
+}
+
+bool Puzzle::Load( void )
+{
+	return false;
+}
+
+bool Puzzle::SetupLevel( int level )
+{
+	this->level = level;
+
+	switch( level )
+	{
+		case 1:
+		{
+			break;
+		}
+		case 2:
+		{
+			break;
+		}
+	}
+
+	return false;
 }
 
 // Puzzle.cpp

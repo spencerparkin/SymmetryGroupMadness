@@ -107,7 +107,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../wxWidgets-3.0.2/lib/vc_x64_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="Code\Application.h" />
     <ClInclude Include="Code\c3ga\c3ga.h" />
+    <ClInclude Include="Code\Canvas.h" />
     <ClInclude Include="Code\Frame.h" />
     <ClInclude Include="Code\LineSegment.h" />
     <ClInclude Include="Code\Puzzle.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Code\Application.cpp" />
     <ClCompile Include="Code\c3ga\c3ga.cpp" />
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp" />
+    <ClCompile Include="Code\Canvas.cpp" />
     <ClCompile Include="Code\Frame.cpp" />
     <ClCompile Include="Code\LineSegment.cpp" />
     <ClCompile Include="Code\List.cpp" />

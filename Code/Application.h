@@ -17,6 +17,13 @@ public:
 	virtual bool OnInit( void ) override;
 	virtual int OnExit( void ) override;
 
+	bool SetPuzzle( Puzzle* puzzle );
+	Puzzle* GetPuzzle( void );
+
+	Frame* GetFrame( void ) { return frame; }
+
+private:
+
 	Frame* frame;
 	Puzzle* puzzle;
 };

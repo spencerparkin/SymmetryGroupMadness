@@ -19,8 +19,14 @@ public:
 
 	void Render( int mode );
 
-	// We want to know which shape and which triangle of the shape is selected.
-	//void ProcessHitRecords
+	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount );
+
+	bool Save( void );
+	bool Load( void );
+
+	bool SetupLevel( int level );
+
+	bool modified;
 
 private:
 
@@ -28,8 +34,8 @@ private:
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 
 	TriangleList* triangleList;
-
 	ShapeList shapeList;
+	int level;
 };
 
 // Puzzle.h
