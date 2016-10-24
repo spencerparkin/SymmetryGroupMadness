@@ -17,7 +17,7 @@ public:
 
 	void GrabShape( const Shape& shape, TriangleList& grabbedTriangleList );
 
-	void Render( int mode );
+	void Render( int renderMode ) const;
 
 	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount );
 

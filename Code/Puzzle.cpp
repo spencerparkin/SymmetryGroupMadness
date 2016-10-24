@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "Triangle.h"
 #include "LineSegment.h"
+#include <wx/glcanvas.h>
 
 Puzzle::Puzzle( void )
 {
@@ -100,8 +101,27 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 	}
 }
 
-void Puzzle::Render( int mode )
+void Puzzle::Render( int renderMode ) const
 {
+	if( renderMode == GL_RENDER )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		glBegin( GL_TRIANGLES );
+
+		for( TriangleList::const_iterator iter = triangleList->cbegin(); iter != triangleList->cend(); iter++ )
+		{
+			const Triangle* triangle = *iter;
+			triangle->Render( renderMode );
+		}
+
+		glEnd();
+	}
+
+	for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
+	{
+		const Shape* shape = *iter;
+		shape->Render( renderMode );
+	}
 }
 
 void Puzzle::ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount )

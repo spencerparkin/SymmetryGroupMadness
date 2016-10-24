@@ -68,7 +68,7 @@ void Frame::OnAbout( wxCommandEvent& event )
 	aboutDialogInfo.SetName( "Symmetry Group Madness" );
 	aboutDialogInfo.SetVersion( "1.0" );
 	aboutDialogInfo.SetDescription( "This program is free software and distributed under the MIT license." );
-	aboutDialogInfo.SetCopyright( "Copyright (C) 2016 Spencer T. Parkin <spencer.parkin@disney.com>" );
+	aboutDialogInfo.SetCopyright( "Copyright (C) 2016 Spencer T. Parkin <spencertparkin@gmail.com>" );
 	//aboutDialogInfo.SetWebSite( "http://spencerparkin.github.io/SymmetryGroupMadness" );
 
 	wxAboutBox( aboutDialogInfo );
@@ -81,6 +81,7 @@ void Frame::OnNewGame( wxCommandEvent& event )
 		Puzzle* puzzle = new Puzzle();
 		puzzle->SetupLevel(1);
 		wxGetApp().SetPuzzle( puzzle );
+		canvas->Refresh();
 	}
 }
 
@@ -100,6 +101,7 @@ void Frame::OnLoadGame( wxCommandEvent& event )
 		delete puzzle;
 	else
 		wxGetApp().SetPuzzle( puzzle );
+	canvas->Refresh();
 }
 
 void Frame::OnUpdateMenuItemUI( wxUpdateUIEvent& event )

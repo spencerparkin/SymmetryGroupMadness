@@ -17,12 +17,15 @@ public:
 	bool Covers( const Triangle& triangle ) const;
 	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
 
+	void Render( int renderMode ) const;
+
 	struct Vertex
 	{
 		c3ga::vectorE3GA point;
 	};
 
 	Vertex vertex[3];
+	c3ga::vectorE3GA color;
 };
 
 // Triangle.h

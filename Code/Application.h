@@ -6,6 +6,7 @@
 
 class Frame;
 class Puzzle;
+class Random;
 
 class Application : public wxApp
 {
@@ -22,10 +23,13 @@ public:
 
 	Frame* GetFrame( void ) { return frame; }
 
+	Random* GetRandom( void ) { return random; }
+
 private:
 
 	Frame* frame;
 	Puzzle* puzzle;
+	Random* random;
 };
 
 wxDECLARE_APP( Application );

@@ -1,6 +1,8 @@
 // Shape.cpp
 
 #include "Shape.h"
+#include "Triangle.h"
+#include <wx/glcanvas.h>
 
 Shape::Shape( void )
 {
@@ -11,6 +13,21 @@ Shape::Shape( void )
 /*virtual*/ Shape::~Shape( void )
 {
 	DeleteTriangleList( triangleList );
+}
+
+void Shape::Render( int renderMode ) const
+{
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glLineWidth( 1.5f );
+	glBegin( GL_TRIANGLES );
+
+	for( TriangleList::const_iterator iter = triangleList.cbegin(); iter != triangleList.cend(); iter++ )
+	{
+		const Triangle* triangle = *iter;
+		triangle->Render( renderMode );
+	}
+
+	glEnd();
 }
 
 // Shape.cpp

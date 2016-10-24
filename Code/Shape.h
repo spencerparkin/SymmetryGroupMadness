@@ -15,6 +15,8 @@ public:
 
 	const TriangleList& GetTriangleList( void ) const { return triangleList; }
 
+	void Render( int renderMode ) const;
+
 private:
 
 	c3ga::vectorE3GA pivotPoint;

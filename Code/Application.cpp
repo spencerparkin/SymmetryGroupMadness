@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Frame.h"
 #include "Puzzle.h"
+#include "Random.h"
 #include <wx/msgdlg.h>
 
 wxIMPLEMENT_APP( Application );
@@ -11,11 +12,13 @@ Application::Application( void )
 {
 	frame = nullptr;
 	puzzle = nullptr;
+	random = new Random();
 }
 
 /*virtual*/ Application::~Application( void )
 {
 	delete puzzle;
+	delete random;
 }
 
 /*virtual*/ bool Application::OnInit( void )
@@ -24,6 +27,7 @@ Application::Application( void )
 		return false;
 
 	frame = new Frame();
+	frame->SetSize( 50, 50, 700, 500 );
 	frame->Show();
 
 	return true;
