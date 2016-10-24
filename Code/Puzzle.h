@@ -28,8 +28,14 @@ public:
 
 	bool modified;
 
+	// TODO: A quick way to know if we're solved might be to gather all vertices from all triangles
+	//       that coincide at a single point in space and make sure they all share the same UVs.
+
+	int GetLevel( void ) const { return level; }
+
 private:
 
+	void ResetTriangles( void );
 	void CutTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 

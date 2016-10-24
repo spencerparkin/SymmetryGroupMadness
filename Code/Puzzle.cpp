@@ -11,6 +11,19 @@ Puzzle::Puzzle( void )
 	modified = false;
 
 	triangleList = new TriangleList();
+}
+
+/*virtual*/ Puzzle::~Puzzle( void )
+{
+	DeleteTriangleList( *triangleList );
+	delete triangleList;
+
+	DeleteShapeList( shapeList );
+}
+
+void Puzzle::ResetTriangles( void )
+{
+	DeleteTriangleList( *triangleList );
 
 	Triangle* triangle = new Triangle();
 	triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, -10.0, 0.0 );
@@ -23,14 +36,6 @@ Puzzle::Puzzle( void )
 	triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, 10.0, 0.0 );
 	triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, 10.0, 0.0 );
 	triangleList->push_back( triangle );
-}
-
-/*virtual*/ Puzzle::~Puzzle( void )
-{
-	DeleteTriangleList( *triangleList );
-	delete triangleList;
-
-	DeleteShapeList( shapeList );
 }
 
 void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
@@ -142,11 +147,19 @@ bool Puzzle::SetupLevel( int level )
 {
 	this->level = level;
 
+	ResetTriangles();
+	DeleteShapeList( shapeList );
+
 	switch( level )
 	{
 		case 1:
 		{
-			break;
+			// Level 1 is just the dihedral group D_4.
+			Shape* shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+
+			return true;
 		}
 		case 2:
 		{
