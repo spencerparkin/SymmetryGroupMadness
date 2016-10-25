@@ -9,7 +9,7 @@
 Puzzle::Puzzle( void )
 {
 	modified = false;
-
+	level = 0;
 	triangleList = new TriangleList();
 }
 
@@ -154,16 +154,19 @@ bool Puzzle::SetupLevel( int level )
 	{
 		case 1:
 		{
-			// Level 1 is just the dihedral group D_4.
+			// Level 1 is just the dihedral group D_3.
 			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -1.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
 			shapeList.push_back( shape );
-
 			return true;
 		}
 		case 2:
 		{
-			break;
+			// Level 2 is just the dihedral group D_4.
+			Shape* shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+			return true;
 		}
 	}
 
