@@ -16,6 +16,7 @@ public:
 
 	bool Covers( const Triangle& triangle ) const;
 	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
+	bool IsDegenerate( double eps = 1e-7 ) const;
 
 	void Render( int renderMode ) const;
 

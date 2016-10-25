@@ -86,7 +86,7 @@ void Puzzle::CutTriangles( const LineSegment& lineSegment )
 		Triangle* triangle = *iter;
 		triangleList->erase( iter );
 
-		if( lineSegment.CutTriangle( *triangle, *newTriangleList ) )
+		if( lineSegment.TessellateTriangle( *triangle, *newTriangleList ) )
 			delete triangle;
 		else
 			newTriangleList->push_back( triangle );

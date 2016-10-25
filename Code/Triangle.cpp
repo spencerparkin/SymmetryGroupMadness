@@ -43,6 +43,14 @@ void Triangle::MakeLineSegments( LineSegmentList& lineSegmentList ) const
 	}
 }
 
+bool Triangle::IsDegenerate( double eps /*= 1e-7*/ ) const
+{
+	c3ga::bivectorE3GA bivector = ( vertex[1].point - vertex[0].point ) ^ ( vertex[2].point - vertex[0].point );
+	if( fabs( bivector.get_e1_e2() / 2.0 ) < eps )
+		return true;
+	return false;
+}
+
 bool Triangle::Covers( const Triangle& triangle ) const
 {
 	for( int i = 0; i < 3; i++ )
@@ -55,11 +63,18 @@ bool Triangle::Covers( const Triangle& triangle ) const
 	return true;
 }
 
+// Note that here we assume that the given point as well as this triangle in the XY-plane.
 bool Triangle::ContainsPoint( const c3ga::vectorE3GA& point ) const
 {
-	// ...check sign of 3 determinants.  if any one of them is negative, the answer is no.
+	for( int i = 0; i < 3; i++ )
+	{
+		int j = ( i + 1 ) % 3;
+		c3ga::bivectorE3GA bivector = ( point - vertex[i].point ) ^ ( vertex[j].point - vertex[i].point );
+		if( bivector.get_e1_e2() < 0.0 )
+			return false;
+	}
 
-	return false;
+	return true;
 }
 
 void Triangle::Render( int renderMode ) const
