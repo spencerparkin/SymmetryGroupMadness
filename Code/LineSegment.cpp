@@ -22,13 +22,11 @@ LineSegment::LineSegment( const c3ga::vectorE3GA& vertex0, const c3ga::vectorE3G
 
 bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& tessellatedTriangleList ) const
 {
-	bool contains0 = triangle.ContainsPoint( vertex[0] );
-	bool contains1 = triangle.ContainsPoint( vertex[1] );
+	c3ga::vectorE3GA anchorPoint = vertex[0];
 
-	bool clipped = false;
-
-	int intersectionCount = 0;
-	c3ga::vectorE3GA intersectionPoint[3];
+	VectorList vectorList;
+	vectorList.push_back( vertex[0] );
+	vectorList.push_back( vertex[1] );
 
 	for( int i = 0; i < 3; i++ )
 	{
@@ -36,44 +34,58 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 		int j = ( i + 1 ) % 3;
 		edge.vertex[0] = triangle.vertex[i].point;
 		edge.vertex[1] = triangle.vertex[j].point;
-		
+
 		c3ga::vectorE3GA point;
 		if( CalculateIntersectionWith( edge, point ) )
-		{
-			//wxASSERT( intersectionCount < 2 );
-			intersectionPoint[ intersectionCount++ ] = point;
-			clipped = true;
-		}
+			vectorList.push_back( point );
 	}
 
-	if( !contains0 && !contains1 && !clipped )
+	struct CompareFunctor
+	{
+		CompareFunctor( const c3ga::vectorE3GA* anchorPoint )
+		{
+			this->anchorPoint = anchorPoint;
+		}
+
+		bool operator()( const c3ga::vectorE3GA& pointA, const c3ga::vectorE3GA& pointB )
+		{
+			double distanceA = c3ga::norm( pointA - *anchorPoint );
+			double distanceB = c3ga::norm( pointB - *anchorPoint );
+			return distanceA < distanceB ? true : false;
+		}
+
+		const c3ga::vectorE3GA* anchorPoint;
+	};
+
+	vectorList.sort( CompareFunctor( &anchorPoint ) );
+
+	while( vectorList.size() > 0 )
+	{
+		VectorList::iterator iter = vectorList.begin();
+		const c3ga::vectorE3GA& point = *iter;
+		if( triangle.ContainsPoint( point ) )
+			break;
+		else
+			vectorList.erase( iter );
+	}
+
+	while( vectorList.size() > 0 )
+	{
+		VectorList::iterator iter = vectorList.end();
+		iter--;
+		const c3ga::vectorE3GA& point = *iter;
+		if( triangle.ContainsPoint( point ) )
+			break;
+		else
+			vectorList.erase( iter );
+	}
+
+	if( vectorList.size() == 0 )
 		return false;
 
 	LineSegment clippedLineSegment;
-
-	if( !contains0 && !contains1 )
-	{
-		wxASSERT( intersectionCount == 2 );
-		clippedLineSegment.vertex[0] = intersectionPoint[0];
-		clippedLineSegment.vertex[1] = intersectionPoint[1];
-	}
-	else if( contains0 && !contains1 )
-	{
-		wxASSERT( intersectionCount >= 1 );
-		clippedLineSegment.vertex[0] = vertex[0];
-		clippedLineSegment.vertex[1] = intersectionPoint[0];
-	}
-	else if( contains1 && !contains0 )
-	{
-		wxASSERT( intersectionCount >= 1 );
-		clippedLineSegment.vertex[0] = vertex[1];
-		clippedLineSegment.vertex[1] = intersectionPoint[0];
-	}
-	else
-	{
-		clippedLineSegment.vertex[0] = vertex[0];
-		clippedLineSegment.vertex[1] = vertex[1];
-	}
+	clippedLineSegment.vertex[0] = *vectorList.begin();
+	clippedLineSegment.vertex[1] = vectorList.back();
 
 	for( int i = 0; i < 3; i++ )
 	{
