@@ -57,17 +57,11 @@ void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 		LineSegmentList::iterator iter = lineSegmentList.begin();
 		LineSegment* lineSegment = *iter;
 
-		CutTriangles( *lineSegment );
+		TessellateTriangles( *lineSegment );
 
 		lineSegmentList.erase( iter );
 		delete lineSegment;
 	}
-
-	// At this point we might consider a compression pass.  It's possible that two
-	// adjacent triangles can be merged into a single triangle.  This would be O(n^2)
-	// unless we kept track of adjacencies using a graph, but that makes our data-structure
-	// quite a bit more complicated.  If at all, I would only add this optimization later
-	// after everything was working, and only if I thought we could benefit from it.
 
 	for( TriangleList::const_iterator iter = shapeTriangleList.begin(); iter != shapeTriangleList.end(); iter++ )
 	{
@@ -76,7 +70,7 @@ void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 	}
 }
 
-void Puzzle::CutTriangles( const LineSegment& lineSegment )
+void Puzzle::TessellateTriangles( const LineSegment& lineSegment )
 {
 	TriangleList* newTriangleList = new TriangleList();
 

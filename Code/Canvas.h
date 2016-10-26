@@ -19,6 +19,9 @@ private:
 
 	void OnPaint( wxPaintEvent& event );
 	void OnSize( wxSizeEvent& event );
+	void OnMouseLeftDown( wxMouseEvent& event );
+	void OnMouseLeftUp( wxMouseEvent& event );
+	void OnMouseMotion( wxMouseEvent& event );
 
 	void BindContext( void );
 

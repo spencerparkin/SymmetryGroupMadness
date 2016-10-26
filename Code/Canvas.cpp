@@ -16,6 +16,9 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 
 	Bind( wxEVT_PAINT, &Canvas::OnPaint, this );
 	Bind( wxEVT_SIZE, &Canvas::OnSize, this );
+	Bind( wxEVT_LEFT_DOWN, &Canvas::OnMouseLeftDown, this );
+	Bind( wxEVT_LEFT_UP, &Canvas::OnMouseLeftUp, this );
+	Bind( wxEVT_MOTION, &Canvas::OnMouseMotion, this );
 }
 
 /*virtual*/ Canvas::~Canvas( void )
@@ -71,7 +74,7 @@ void Canvas::Render( GLenum renderMode, wxPoint* pickingPoint /*= nullptr*/ )
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	gluLookAt( 0.0, 0.0, -20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 );
+	gluLookAt( 0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 );
 
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( puzzle )
@@ -106,6 +109,30 @@ void Canvas::OnSize( wxSizeEvent& event )
 	wxSize size = event.GetSize();
 	glViewport( 0, 0, size.GetWidth(), size.GetHeight() );
 	Refresh();
+}
+
+void Canvas::OnMouseLeftDown( wxMouseEvent& event )
+{
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( !puzzle )
+		return;
+
+	const ShapeList& shapeList = puzzle->GetShapeList();
+	ShapeList::const_iterator iter = shapeList.begin();
+	const Shape* shape = *iter;
+
+	TriangleList grabbedTriangleList;
+	puzzle->GrabShape( *shape, grabbedTriangleList );
+
+	Refresh();
+}
+
+void Canvas::OnMouseLeftUp( wxMouseEvent& event )
+{
+}
+
+void Canvas::OnMouseMotion( wxMouseEvent& event )
+{
 }
 
 // Canvas.cpp

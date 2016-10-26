@@ -14,7 +14,7 @@ Triangle::Triangle( void )
 		vtx->point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 );
 	}
 
-	color = wxGetApp().GetRandom()->Vector( 0.1, 1.0 );
+	color = wxGetApp().GetRandom()->Vector( 0.5, 1.0 );
 }
 
 /*virtual*/ Triangle::~Triangle( void )
@@ -69,7 +69,7 @@ bool Triangle::ContainsPoint( const c3ga::vectorE3GA& point ) const
 	for( int i = 0; i < 3; i++ )
 	{
 		int j = ( i + 1 ) % 3;
-		c3ga::bivectorE3GA bivector = ( point - vertex[i].point ) ^ ( vertex[j].point - vertex[i].point );
+		c3ga::bivectorE3GA bivector = c3ga::op( vertex[j].point - vertex[i].point, point - vertex[i].point );
 		if( bivector.get_e1_e2() < 0.0 )
 			return false;
 	}

@@ -33,10 +33,12 @@ public:
 
 	int GetLevel( void ) const { return level; }
 
+	const ShapeList& GetShapeList( void ) { return shapeList; }
+
 private:
 
 	void ResetTriangles( void );
-	void CutTriangles( const LineSegment& lineSegment );
+	void TessellateTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 
 	TriangleList* triangleList;
