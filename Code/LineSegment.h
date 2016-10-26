@@ -22,6 +22,7 @@ public:
 	const c3ga::vectorE3GA& GetVertex( int i ) const { return vertex[ i % 2 ]; }
 	bool SatisfiesTriangleInequality( const c3ga::vectorE3GA& point ) const;
 	double CalculateOrthogonalDistanceToLine( const c3ga::vectorE3GA& point ) const;
+	bool ContainsPoint( const c3ga::vectorE3GA& point, double eps = 1e-7 ) const;
 
 private:
 

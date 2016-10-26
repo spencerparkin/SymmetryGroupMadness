@@ -75,6 +75,17 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 		clippedLineSegment.vertex[1] = vertex[1];
 	}
 
+	for( int i = 0; i < 3; i++ )
+	{
+		LineSegment edge;
+		int j = ( i + 1 ) % 3;
+		edge.vertex[0] = triangle.vertex[i].point;
+		edge.vertex[1] = triangle.vertex[j].point;
+
+		if( edge.ContainsPoint( clippedLineSegment.vertex[0] ) && edge.ContainsPoint( clippedLineSegment.vertex[1] ) )
+			return false;
+	}
+
 	// Here we treat every case as if both vertices of the clipped line segment
 	// are strictly interior to the triangle.  We choose the best tesselation.
 	// Then we simply throw out degenerate triangles.
@@ -198,6 +209,17 @@ c3ga::vectorE3GA LineSegment::CalculateLineVector( void ) const
 	double dot = c3ga::lc( vertex[0], normal );
 	vector = normal - c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, dot );
 	return vector;
+}
+
+bool LineSegment::ContainsPoint( const c3ga::vectorE3GA& point, double eps /*= 1e-7*/ ) const
+{
+	c3ga::vectorE3GA vector = CalculateLineVector();
+	c3ga::vectorE3GA homogenizedPoint = point;
+	homogenizedPoint.set_e3( 1.0 );
+	double dot = c3ga::lc( homogenizedPoint, vector );
+	if( fabs( dot ) < eps )
+		return true;
+	return false;
 }
 
 double LineSegment::CalculateLength( void ) const
