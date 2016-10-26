@@ -19,7 +19,8 @@ public:
 
 	void Render( int renderMode ) const;
 
-	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount );
+	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount, int* triangleId );
+	Shape* GetShapeOwningTriangle( int triangleId );
 
 	bool Save( void );
 	bool Load( void );

@@ -27,6 +27,9 @@ public:
 
 	Vertex vertex[3];
 	c3ga::vectorE3GA color;
+	int id;
+
+	static int nextId;
 };
 
 // Triangle.h

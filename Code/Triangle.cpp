@@ -6,8 +6,12 @@
 #include "Random.h"
 #include <wx/glcanvas.h>
 
+int Triangle::nextId = 1;
+
 Triangle::Triangle( void )
 {
+	id = nextId++;
+
 	for( int i = 0; i < 3; i++ )
 	{
 		Vertex* vtx = &vertex[i];

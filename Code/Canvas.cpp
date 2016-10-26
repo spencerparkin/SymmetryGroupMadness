@@ -14,16 +14,20 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 	hitBuffer = nullptr;
 	hitBufferSize = 0;
 
+	grab = nullptr;
+
 	Bind( wxEVT_PAINT, &Canvas::OnPaint, this );
 	Bind( wxEVT_SIZE, &Canvas::OnSize, this );
 	Bind( wxEVT_LEFT_DOWN, &Canvas::OnMouseLeftDown, this );
 	Bind( wxEVT_LEFT_UP, &Canvas::OnMouseLeftUp, this );
 	Bind( wxEVT_MOTION, &Canvas::OnMouseMotion, this );
+	Bind( wxEVT_MOUSE_CAPTURE_LOST, &Canvas::OnMouseCaptureLost, this );
 }
 
 /*virtual*/ Canvas::~Canvas( void )
 {
 	delete context;
+	delete grab;
 }
 
 void Canvas::BindContext( void )
@@ -34,7 +38,7 @@ void Canvas::BindContext( void )
 	SetCurrent( *context );
 }
 
-void Canvas::Render( GLenum renderMode, wxPoint* pickingPoint /*= nullptr*/ )
+void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/ )
 {
 	BindContext();
 
@@ -87,7 +91,7 @@ void Canvas::Render( GLenum renderMode, wxPoint* pickingPoint /*= nullptr*/ )
 		int hitCount = glRenderMode( GL_RENDER );
 
 		if( puzzle )
-			puzzle->ProcessHitRecords( hitBuffer, hitBufferSize, hitCount );
+			puzzle->ProcessHitRecords( hitBuffer, hitBufferSize, hitCount, triangleId );
 
 		delete[] hitBuffer;
 		hitBuffer = nullptr;
@@ -111,28 +115,79 @@ void Canvas::OnSize( wxSizeEvent& event )
 	Refresh();
 }
 
-void Canvas::OnMouseLeftDown( wxMouseEvent& event )
+bool Canvas::AcquireGrab( const wxPoint& pickingPoint )
 {
+	if( grab )
+		return false;
+
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( !puzzle )
-		return;
+		return false;
 
-	const ShapeList& shapeList = puzzle->GetShapeList();
-	ShapeList::const_iterator iter = shapeList.begin();
-	const Shape* shape = *iter;
+	int triangleId = 0;
 
-	TriangleList grabbedTriangleList;
-	puzzle->GrabShape( *shape, grabbedTriangleList );
+	Render( GL_SELECT, &pickingPoint, &triangleId );
+	if( triangleId == 0 )
+		return false;
 
+	Shape* shape = puzzle->GetShapeOwningTriangle( triangleId );
+	if( !shape )
+		return false;
+
+	grab = new Grab();
+
+	puzzle->GrabShape( *shape, grab->triangleList );
+	if( grab->triangleList.size() == 0 )
+	{
+		delete grab;
+		grab = nullptr;
+		return false;
+	}
+
+	// TODO: How are we grabbing the triangles?
+
+	return true;
+}
+
+bool Canvas::ReleaseGrab( void )
+{
+	if( !grab )
+		return false;
+
+	// TODO: Snap transformation to nearest acceptable location.
+
+	delete grab;
+	grab = nullptr;
+
+	return true;
+}
+
+void Canvas::OnMouseLeftDown( wxMouseEvent& event )
+{
+	wxPoint pickingPoint = event.GetPosition();
+	if( AcquireGrab( pickingPoint ) )
+		CaptureMouse();
 	Refresh();
 }
 
 void Canvas::OnMouseLeftUp( wxMouseEvent& event )
 {
+	ReleaseGrab();
+
+	if( HasCapture() )
+		ReleaseMouse();
 }
 
 void Canvas::OnMouseMotion( wxMouseEvent& event )
 {
+	if( grab )
+	{
+	}
+}
+
+void Canvas::OnMouseCaptureLost( wxMouseCaptureLostEvent& event )
+{
+	ReleaseGrab();
 }
 
 // Canvas.cpp

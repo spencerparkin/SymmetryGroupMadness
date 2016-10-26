@@ -18,17 +18,37 @@ Shape::Shape( void )
 
 void Shape::Render( int renderMode ) const
 {
-	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glLineWidth( 1.5f );
-	glBegin( GL_TRIANGLES );
+	if( renderMode == GL_RENDER )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glLineWidth( 1.5f );
+	}
+	else if( renderMode == GL_SELECT )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	}
 
 	for( TriangleList::const_iterator iter = triangleList.cbegin(); iter != triangleList.cend(); iter++ )
 	{
 		const Triangle* triangle = *iter;
+		if( renderMode == GL_SELECT )
+			glLoadName( triangle->id );
+		glBegin( GL_TRIANGLES );
 		triangle->Render( renderMode );
+		glEnd();
+	}
+}
+
+bool Shape::OwnsTriangle( int triangleId ) const
+{
+	for( TriangleList::const_iterator iter = triangleList.cbegin(); iter != triangleList.cend(); iter++ )
+	{
+		const Triangle* triangle = *iter;
+		if( triangle->id == triangleId )
+			return true;
 	}
 
-	glEnd();
+	return false;
 }
 
 void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle /*= 0.0*/ )

@@ -115,6 +115,10 @@ void Puzzle::Render( int renderMode ) const
 
 		glEnd();
 	}
+	else if( renderMode == GL_SELECT )
+	{
+		glPushName(0);
+	}
 
 	for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
 	{
@@ -123,8 +127,39 @@ void Puzzle::Render( int renderMode ) const
 	}
 }
 
-void Puzzle::ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount )
+void Puzzle::ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount, int* triangleId )
 {
+	*triangleId = 0;
+
+	// If the hit-count is -1 (indicating overflow), we don't process anything.
+	unsigned int* hitRecord = hitBuffer;
+	float smallestZ = 0.f;
+	for( int i = 0; i < hitCount; i++ )
+	{
+		unsigned int nameCount = hitRecord[0];
+		float minZ = float( hitRecord[1] ) / float( 0x7FFFFFFFF );
+		if( nameCount == 1 )
+		{
+			if( *triangleId == 0 || minZ < smallestZ )
+			{
+				smallestZ = minZ;
+				*triangleId = ( signed )hitRecord[3];
+			}
+		}
+		hitRecord += 3 + nameCount;
+	}
+}
+
+Shape* Puzzle::GetShapeOwningTriangle( int triangleId )
+{
+	for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+	{
+		Shape* shape = *iter;
+		if( shape->OwnsTriangle( triangleId ) )
+			return shape;
+	}
+
+	return nullptr;
 }
 
 bool Puzzle::Save( void )
@@ -150,7 +185,7 @@ bool Puzzle::SetupLevel( int level )
 		{
 			// Level 1 is just the dihedral group D_3.
 			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -1.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
 			shapeList.push_back( shape );
 			return true;
 		}
