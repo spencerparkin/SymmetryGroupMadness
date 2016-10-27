@@ -3,7 +3,7 @@
 #pragma once
 
 #include "c3ga/c3ga.h"
-#include "List.h"
+#include "Container.h"
 
 class Triangle
 {
@@ -19,6 +19,8 @@ public:
 	bool IsDegenerate( double eps = 1e-7 ) const;
 
 	void Render( int renderMode ) const;
+
+	Triangle* Clone( void ) const;
 
 	struct Vertex
 	{

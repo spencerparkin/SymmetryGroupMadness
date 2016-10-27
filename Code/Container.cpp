@@ -1,6 +1,6 @@
-// List.cpp
+// Container.cpp
 
-#include "List.h"
+#include "Container.h"
 #include "Triangle.h"
 #include "LineSegment.h"
 #include "Shape.h"
@@ -38,4 +38,15 @@ void DeleteShapeList( ShapeList& shapeList )
 	}
 }
 
-// List.cpp
+void DeleteTriangleMap( TriangleMap& triangleMap )
+{
+	while( triangleMap.size() > 0 )
+	{
+		TriangleMap::iterator iter = triangleMap.begin();
+		Triangle* triangle = iter->second;
+		delete triangle;
+		triangleMap.erase( iter );
+	}
+}
+
+// Container.cpp

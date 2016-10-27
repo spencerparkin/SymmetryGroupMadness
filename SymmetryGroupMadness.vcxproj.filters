@@ -25,9 +25,6 @@
     <ClInclude Include="Code\Shape.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\List.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Frame.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -38,6 +35,9 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Random.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Container.h">
       <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,9 +57,6 @@
     <ClCompile Include="Code\Puzzle.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\List.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Shape.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -73,6 +70,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\Random.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Container.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

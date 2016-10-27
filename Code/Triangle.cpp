@@ -25,6 +25,18 @@ Triangle::Triangle( void )
 {
 }
 
+Triangle* Triangle::Clone( void ) const
+{
+	Triangle* triangle = new Triangle();
+
+	for( int i = 0; i < 3; i++ )
+		triangle->vertex[i] = vertex[i];
+
+	triangle->color = color;
+
+	return triangle;
+}
+
 void Triangle::MakeLineSegments( LineSegmentList& lineSegmentList ) const
 {
 	for( int i = 0; i < 3; i++ )

@@ -54,7 +54,7 @@ bool Shape::OwnsTriangle( int triangleId ) const
 void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle /*= 0.0*/ )
 {
 	DeleteTriangleList( triangleList );
-	reflectionAxisList.clear();
+	reflectionAxisArray.clear();
 	rotationDelta = 2.0 * M_PI / double( sides );
 	pivotPoint = center;
 
@@ -77,6 +77,8 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 		triangle->vertex[2].point = vertices[ i + 1 ];
 		triangleList.push_back( triangle );
 	}
+
+	// TODO: Add reflection axes to the array.
 
 	delete[] vertices;
 }
