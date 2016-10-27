@@ -52,9 +52,6 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-
 	GLint viewport[4];
 	glGetIntegerv( GL_VIEWPORT, viewport );
 
@@ -67,17 +64,30 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 		gluPickMatrix( x, y, w, h, viewport );
 	}
 
-	GLdouble foviAngle = 60.0;
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+
 	GLdouble aspectRatio = GLdouble( viewport[2] ) / GLdouble( viewport[3] );
-	GLdouble nearPlane = 1.0;
-	GLdouble farPlane = 100.0;
-	gluPerspective( foviAngle, aspectRatio, nearPlane, farPlane );
+
+	Rectangle_ rectangle;
+	rectangle.xMin = -1.0;
+	rectangle.xMax = 1.0;
+	rectangle.yMin = -1.0;
+	rectangle.yMax = 1.0;
+
+	if( puzzle )
+	{
+		rectangle = *puzzle->GetRectangle();
+		rectangle.ShrinkToMatchAspectRatio( aspectRatio );
+	}
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	gluOrtho2D( rectangle.xMin, rectangle.xMax, rectangle.yMin, rectangle.yMax );
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	gluLookAt( 0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 );
-
-	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	gluLookAt( 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 );
+	
 	if( puzzle )
 		puzzle->Render( renderMode );
 
@@ -98,6 +108,32 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 	{
 		SwapBuffers();
 	}
+}
+
+bool Canvas::CalculateMouseLocation( const wxPoint& mousePoint, c3ga::vectorE3GA& mouseLocation )
+{
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( !puzzle )
+		return false;
+
+	GLint viewport[4];
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+	Rectangle_ viewportRectangle;
+	viewportRectangle.xMin = double( viewport[0] );
+	viewportRectangle.yMin = double( viewport[1] );
+	viewportRectangle.xMax = double( viewport[2] );
+	viewportRectangle.yMax = double( viewport[3] );
+
+	viewportRectangle.ExpandToMatchAspectRatio( puzzle->GetRectangle()->GetAspectRatio() );
+
+	mouseLocation.set_e1( double( mousePoint.x ) );
+	mouseLocation.set_e2( double( viewport[3] - mousePoint.y ) );
+	mouseLocation.set_e3( 0.0 );
+
+	viewportRectangle.LinearMap( *puzzle->GetRectangle(), mouseLocation );
+	
+	return true;
 }
 
 void Canvas::OnPaint( wxPaintEvent& event )

@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "Triangle.h"
 #include "LineSegment.h"
+#include "Rectangle.h"
 #include <wx/glcanvas.h>
 
 Puzzle::Puzzle( void )
@@ -11,6 +12,7 @@ Puzzle::Puzzle( void )
 	modified = false;
 	level = 0;
 	triangleList = new TriangleList();
+	rectangle = nullptr;
 }
 
 /*virtual*/ Puzzle::~Puzzle( void )
@@ -19,23 +21,70 @@ Puzzle::Puzzle( void )
 	delete triangleList;
 
 	DeleteShapeList( shapeList );
+
+	delete rectangle;
 }
 
 void Puzzle::ResetTriangles( void )
 {
 	DeleteTriangleList( *triangleList );
 
-	Triangle* triangle = new Triangle();
-	triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, -10.0, 0.0 );
-	triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, -10.0, 0.0 );
-	triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, 10.0, 0.0 );
-	triangleList->push_back( triangle );
+	for( int i = -10; i <= 10; i++ )
+	{
+		for( int j = -10; j <= 10; j++ )
+		{
+			double w = 1.0;
+			double h = 1.0;
+			double x = double(i) * w;
+			double y = double(j) * h;
 
-	triangle = new Triangle();
-	triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, -10.0, 0.0 );
-	triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 10.0, 10.0, 0.0 );
-	triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, -10.0, 10.0, 0.0 );
-	triangleList->push_back( triangle );
+			Triangle* triangle = new Triangle();
+			triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x - w / 2.0, y - h / 2.0, 0.0 );
+			triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x + w / 2.0, y - h / 2.0, 0.0 );
+			triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x + w / 2.0, y + h / 2.0, 0.0 );
+			triangleList->push_back( triangle );
+
+			triangle = new Triangle();
+			triangle->vertex[0].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x - w / 2.0, y - h / 2.0, 0.0 );
+			triangle->vertex[1].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x + w / 2.0, y + h / 2.0, 0.0 );
+			triangle->vertex[2].point.set( c3ga::vectorE3GA::coord_e1_e2_e3, x - w / 2.0, y + h / 2.0, 0.0 );
+			triangleList->push_back( triangle );
+		}
+	}
+}
+
+const Rectangle_* Puzzle::GetRectangle( void ) const
+{
+	// The rectangle of the puzzle never changes during the course
+	// of the game, so we need only ever compute it once.
+	if( !rectangle )
+	{
+		rectangle = new Rectangle_();
+
+		rectangle->xMin = 9999.0;
+		rectangle->xMax = -9999.0;
+		rectangle->yMin = 9999.0;
+		rectangle->yMax = -9999.0;
+
+		for( TriangleList::const_iterator iter = triangleList->begin(); iter != triangleList->end(); iter++ )
+		{
+			const Triangle* triangle = *iter;
+			for( int i = 0; i < 3; i++ )
+			{
+				const c3ga::vectorE3GA& point = triangle->vertex[i].point;
+				if( point.get_e1() < rectangle->xMin )
+					rectangle->xMin = point.get_e1();
+				if( point.get_e1() > rectangle->xMax )
+					rectangle->xMax = point.get_e1();
+				if( point.get_e2() < rectangle->yMin )
+					rectangle->yMin = point.get_e2();
+				if( point.get_e2() > rectangle->yMax )
+					rectangle->yMax = point.get_e2();
+			}
+		}
+	}
+
+	return rectangle;
 }
 
 void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
@@ -156,6 +205,22 @@ Shape* Puzzle::GetShapeOwningTriangle( int triangleId )
 	{
 		Shape* shape = *iter;
 		if( shape->OwnsTriangle( triangleId ) )
+			return shape;
+	}
+
+	return nullptr;
+}
+
+Shape* Puzzle::GetShapeContainingPoint( const c3ga::vectorE3GA& point )
+{
+	// Now because the shapes in the puzzle overlap, here, which one
+	// we return of two overlapping shapes, remains undefined.  This is
+	// fine, however, because there will be plenty of each shape that
+	// doesn't overlap with some other shape.
+	for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+	{
+		Shape* shape = *iter;
+		if( shape->ContainsPoint( point ) )
 			return shape;
 	}
 

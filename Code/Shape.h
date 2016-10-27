@@ -18,6 +18,7 @@ public:
 	void Render( int renderMode ) const;
 
 	bool OwnsTriangle( int triangleId ) const;
+	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
 
 	void MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle = 0.0 );
 	void MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle = 0.0 );

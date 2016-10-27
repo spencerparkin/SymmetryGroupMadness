@@ -7,6 +7,7 @@
 class Shape;
 class LineSegment;
 class Triangle;
+class Rectangle_;
 
 class Puzzle
 {
@@ -21,6 +22,7 @@ public:
 
 	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount, int* triangleId );
 	Shape* GetShapeOwningTriangle( int triangleId );
+	Shape* GetShapeContainingPoint( const c3ga::vectorE3GA& point );
 
 	bool Save( void );
 	bool Load( void );
@@ -36,6 +38,8 @@ public:
 
 	const ShapeList& GetShapeList( void ) { return shapeList; }
 
+	const Rectangle_* GetRectangle( void ) const;
+
 private:
 
 	void ResetTriangles( void );
@@ -45,6 +49,7 @@ private:
 	TriangleList* triangleList;
 	ShapeList shapeList;
 	int level;
+	mutable Rectangle_* rectangle;
 };
 
 // Puzzle.h

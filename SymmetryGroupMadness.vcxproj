@@ -152,6 +152,7 @@
     <ClInclude Include="Code\LineSegment.h" />
     <ClInclude Include="Code\Puzzle.h" />
     <ClInclude Include="Code\Random.h" />
+    <ClInclude Include="Code\Rectangle.h" />
     <ClInclude Include="Code\Shape.h" />
     <ClInclude Include="Code\Triangle.h" />
     <ClInclude Include="Code\Container.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Code\LineSegment.cpp" />
     <ClCompile Include="Code\Container.cpp" />
     <ClCompile Include="Code\Puzzle.cpp" />
+    <ClCompile Include="Code\Rectangle.cpp" />
     <ClCompile Include="Code\Shape.cpp" />
     <ClCompile Include="Code\Random.cpp" />
     <ClCompile Include="Code\Triangle.cpp" />

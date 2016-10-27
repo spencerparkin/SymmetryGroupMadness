@@ -4,6 +4,7 @@
 
 #include <wx/glcanvas.h>
 #include "Container.h"
+#include "Rectangle.h"
 
 class Canvas : public wxGLCanvas
 {
@@ -27,9 +28,12 @@ private:
 
 	void BindContext( void );
 
+	bool CalculateMouseLocation( const wxPoint& mousePoint, c3ga::vectorE3GA& mouseLocation );
+
 	wxGLContext* context;
 	unsigned int* hitBuffer;
 	int hitBufferSize;
+	Rectangle_ rectangle;
 };
 
 // Canvas.h
