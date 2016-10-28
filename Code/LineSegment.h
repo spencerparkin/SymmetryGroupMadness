@@ -26,8 +26,6 @@ public:
 
 private:
 
-	static void AddNonDegenerateTriangle( Triangle* newTriangle, TriangleList& triangleList );
-
 	c3ga::vectorE3GA vertex[2];
 };
 

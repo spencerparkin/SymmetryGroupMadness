@@ -27,7 +27,7 @@ Application::Application( void )
 		return false;
 
 	frame = new Frame();
-	frame->SetSize( 50, 50, 700, 500 );
+	frame->SetSize( 50, 50, 700, 700 );
 	frame->Show();
 
 	return true;

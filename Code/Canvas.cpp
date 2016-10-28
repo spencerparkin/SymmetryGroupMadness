@@ -293,7 +293,17 @@ void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 		
 		Triangle* triangle = wxGetApp().GetPuzzle()->GetTriangleById( triangleId );
 		if( triangle )
+		{
+			wxString data = wxString::Format( "(%1.2f,%1.2f)-(%1.2f,%1.2f)-(%1.2f,%1.2f)",
+				triangle->vertex[0].point.get_e1(), triangle->vertex[0].point.get_e2(),
+				triangle->vertex[1].point.get_e1(), triangle->vertex[1].point.get_e2(),
+				triangle->vertex[2].point.get_e1(), triangle->vertex[2].point.get_e2() );
+			wxMessageBox( data, "data" );
+
 			triangle->sortKey = 1;
+			triangle->color.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 );
+			Refresh();
+		}
 
 		return;
 	}
