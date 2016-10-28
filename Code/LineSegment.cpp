@@ -22,7 +22,89 @@ LineSegment::LineSegment( const c3ga::vectorE3GA& vertex0, const c3ga::vectorE3G
 
 bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& tessellatedTriangleList ) const
 {
-	return false;
+	VectorArray edgeHitArray;
+
+	for( int i = 0; i < 3; i++ )
+	{
+		int j = ( i + 1 ) % 3;
+		LineSegment edge;
+		edge.vertex[0] = triangle.vertex[i].point;
+		edge.vertex[1] = triangle.vertex[j].point;
+
+		c3ga::vectorE3GA intersectionPoint;
+		if( CalculateIntersectionWith( edge, intersectionPoint, false, true ) )
+			edgeHitArray.push_back( intersectionPoint );
+	}
+
+	if( edgeHitArray.size() <= 1 )
+		return false;
+
+	wxASSERT( edgeHitArray.size() == 2 );
+	if( edgeHitArray.size() != 2 )
+		return false;
+
+	LineSegment chord;
+	chord.vertex[0] = *edgeHitArray.begin();
+	chord.vertex[1] = edgeHitArray.back();
+
+	if( !( chord.ContainsPoint( vertex[0] ) || chord.ContainsPoint( vertex[1] ) ||
+		ContainsPoint( chord.vertex[0] ) || ContainsPoint( chord.vertex[1] ) ) )
+	{
+		return false;
+	}
+
+	// Get vertex list in CCW order.
+	VectorArray vertexArray;	// TODO: May want to replace this with std::list< Triangle::Vertex >.
+
+	for( int i = 0; i < 3; i++ )
+	{
+		int j = ( i + 1 ) % 3;
+		LineSegment edge;
+		edge.vertex[0] = triangle.vertex[i].point;
+		edge.vertex[1] = triangle.vertex[j].point;
+
+		vertexArray.push_back( edge.vertex[0] );
+
+		// There may be duplicate vertices put on the list, but that's okay.
+		for( int k = 0; k < 2; k++ )
+			if( edge.ContainsPoint( chord.vertex[k] ) )
+				vertexArray.push_back( chord.vertex[k] );
+	}
+
+	wxASSERT( vertexArray.size() >= 5 );
+
+	c3ga::vectorE3GA center( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 );
+	for( int i = 0; i < vertexArray.size(); i++ )
+		center += vertexArray[i];
+
+	center = center * ( 1.0 / double( vertexArray.size() ) );
+
+	double smallestDistance = 0.0;
+	int bestVertex = -1;
+	for( int i = 0; i < vertexArray.size(); i++ )
+	{
+		double distance = c3ga::norm( center - vertexArray[i] );
+		if( bestVertex == -1 || distance < smallestDistance )
+		{
+			smallestDistance = distance;
+			bestVertex = i;
+		}
+	}
+
+	// This is not necessarily the best tessellation, but it should work.
+	for( int i = 0; i < vertexArray.size() - 2; i++ )
+	{
+		Triangle* triangle = new Triangle();
+		triangle->vertex[0].point = vertexArray[ bestVertex ];
+		triangle->vertex[1].point = vertexArray[ ( bestVertex + i + 1 ) % vertexArray.size() ];
+		triangle->vertex[2].point = vertexArray[ ( bestVertex + i + 2 ) % vertexArray.size() ];
+		if( triangle->IsDegenerate() )
+			delete triangle;
+		else
+			tessellatedTriangleList.push_back( triangle );
+	}
+
+	return true;
 }
 
 double LineSegment::CalculateOrthogonalDistanceToLine( const c3ga::vectorE3GA& point ) const
@@ -33,21 +115,21 @@ double LineSegment::CalculateOrthogonalDistanceToLine( const c3ga::vectorE3GA& p
 	return distance;
 }
 
-bool LineSegment::CalculateIntersectionWith( const LineSegment& lineSegment, c3ga::vectorE3GA& intersectionPoint ) const
+bool LineSegment::CalculateIntersectionWith( const LineSegment& lineSegment, c3ga::vectorE3GA& intersectionPoint, bool mustHitThis, bool mustHitGiven ) const
 {
 	c3ga::bivectorE3GA bivector = CalculateLineVector() ^ lineSegment.CalculateLineVector();
 	if( bivector.get_e1_e2() == 0.0 )
-		return false;		// The line segments are parallel.
+		return false;		// The line segments are parallel.  They either intersect not at all, in a single point, or an infinite number of points; we don't care?
 
 	c3ga::vectorE3GA vector = bivector * c3ga::I3;
 	intersectionPoint.set_e1( vector.get_e1() / vector.get_e3() );
 	intersectionPoint.set_e2( vector.get_e2() / vector.get_e3() );
 	intersectionPoint.set_e3( 0.0 );
 
-	if( !ContainsPoint( intersectionPoint ) )
+	if( mustHitThis && !ContainsPoint( intersectionPoint ) )
 		return false;
 
-	if( !lineSegment.ContainsPoint( intersectionPoint ) )
+	if( mustHitGiven && !lineSegment.ContainsPoint( intersectionPoint ) )
 		return false;
 
 	return true;

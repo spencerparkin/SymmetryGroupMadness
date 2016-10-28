@@ -16,7 +16,7 @@ public:
 	virtual ~LineSegment( void );
 
 	bool TessellateTriangle( const Triangle& triangle, TriangleList& tessellatedTriangleList ) const;
-	bool CalculateIntersectionWith( const LineSegment& lineSegment, c3ga::vectorE3GA& intersectionPoint ) const;
+	bool CalculateIntersectionWith( const LineSegment& lineSegment, c3ga::vectorE3GA& intersectionPoint, bool mustHitThis, bool mustHitGiven ) const;
 	c3ga::vectorE3GA CalculateLineVector( void ) const;
 	double CalculateLength( void ) const;
 	const c3ga::vectorE3GA& GetVertex( int i ) const { return vertex[ i % 2 ]; }
