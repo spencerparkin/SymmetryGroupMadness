@@ -16,7 +16,7 @@ public:
 	Puzzle( void );
 	virtual ~Puzzle( void );
 
-	void GrabShape( const Shape& shape, TriangleList& grabbedTriangleList );
+	bool GrabShape( const Shape& shape, TriangleList& grabbedTriangleList );
 
 	void Render( int renderMode ) const;
 

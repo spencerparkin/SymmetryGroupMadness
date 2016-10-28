@@ -11,6 +11,7 @@ int Triangle::nextId = 1;
 Triangle::Triangle( void )
 {
 	id = nextId++;
+	sortKey = 0;
 
 	for( int i = 0; i < 3; i++ )
 	{
@@ -67,26 +68,26 @@ bool Triangle::IsDegenerate( double eps /*= 1e-7*/ ) const
 	return false;
 }
 
-bool Triangle::Covers( const Triangle& triangle ) const
+bool Triangle::Covers( const Triangle& triangle, double eps /*= 1e-7*/ ) const
 {
 	for( int i = 0; i < 3; i++ )
 	{
 		const Vertex* vtx = &triangle.vertex[i];
-		if( !ContainsPoint( vtx->point ) )
+		if( !ContainsPoint( vtx->point, eps ) )
 			return false;
 	}
 
 	return true;
 }
 
-// Note that here we assume that the given point as well as this triangle in the XY-plane.
-bool Triangle::ContainsPoint( const c3ga::vectorE3GA& point ) const
+// Note that here we assume that the given point as well as this triangle is in the XY-plane.
+bool Triangle::ContainsPoint( const c3ga::vectorE3GA& point, double eps /*= 0.0*/ ) const
 {
 	for( int i = 0; i < 3; i++ )
 	{
 		int j = ( i + 1 ) % 3;
 		c3ga::bivectorE3GA bivector = c3ga::op( vertex[j].point - vertex[i].point, point - vertex[i].point );
-		if( bivector.get_e1_e2() < 0.0 )
+		if( bivector.get_e1_e2() < -eps )
 			return false;
 	}
 

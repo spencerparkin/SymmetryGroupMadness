@@ -90,7 +90,25 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 		triangleList.push_back( triangle );
 	}
 
-	// TODO: Add reflection axes to the array.
+	if( sides % 2 == 1 )
+	{
+		for( int i = 0; i < sides; i++ )
+		{
+			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] );
+			reflectionAxisArray.push_back( axis );
+		}
+	}
+	else
+	{
+		for( int i = 0; i < sides / 2; i++ )
+		{
+			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] );
+			reflectionAxisArray.push_back( axis );
+
+			axis = c3ga::unit( vertices[i] + vertices[ i + 1 ] );
+			reflectionAxisArray.push_back( axis );
+		}
+	}
 
 	delete[] vertices;
 }

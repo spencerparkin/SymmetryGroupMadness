@@ -25,6 +25,7 @@ public:
 
 	const VectorArray& GetReflectionAxisArray( void ) const { return reflectionAxisArray; }
 	double GetRotationDelta( void ) const { return rotationDelta; }
+	const c3ga::vectorE3GA& GetPivotPoint( void ) const { return pivotPoint; }
 
 private:
 

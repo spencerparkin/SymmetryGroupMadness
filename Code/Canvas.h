@@ -22,7 +22,9 @@ private:
 	void OnPaint( wxPaintEvent& event );
 	void OnSize( wxSizeEvent& event );
 	void OnMouseLeftDown( wxMouseEvent& event );
+	void OnMouseRightDown( wxMouseEvent& event );
 	void OnMouseLeftUp( wxMouseEvent& event );
+	void OnMouseRightUp( wxMouseEvent& event );
 	void OnMouseMotion( wxMouseEvent& event );
 	void OnMouseCaptureLost( wxMouseCaptureLostEvent& event );
 
@@ -34,6 +36,30 @@ private:
 	unsigned int* hitBuffer;
 	int hitBufferSize;
 	Rectangle_ rectangle;
+
+	struct Grab
+	{
+		~Grab( void );
+
+		TriangleList grabbedTriangleList;
+		TriangleMap originalTriangleMap;
+		c3ga::vectorE3GA rotationAxis;
+		double rotationAngle;
+		double rotationAngleMultiple;
+		c3ga::vectorE3GA anchorPoint;
+		c3ga::vectorE3GA pivotPoint;
+		const Shape* shape;
+		enum Type { ROTATION, REFLECTION };
+		Type type;
+
+		void ApplyRotation( void );
+	};
+
+	void InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType );
+	void FinalizeGrab( bool commitRotation = true );
+	void ManageGrab( const wxPoint& mousePoint );
+
+	Grab* grab;
 };
 
 // Canvas.h

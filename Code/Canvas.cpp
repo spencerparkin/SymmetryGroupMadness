@@ -3,7 +3,11 @@
 #include "Canvas.h"
 #include "Application.h"
 #include "Puzzle.h"
+#include "Triangle.h"
+#include "Shape.h"
 #include <gl/GLU.h>
+#include <wx/scopedptr.h>
+#include <wx/msgdlg.h>
 
 int Canvas::attributeList[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 
@@ -11,13 +15,17 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 {
 	context = nullptr;
 
+	grab = nullptr;
+
 	hitBuffer = nullptr;
 	hitBufferSize = 0;
 
 	Bind( wxEVT_PAINT, &Canvas::OnPaint, this );
 	Bind( wxEVT_SIZE, &Canvas::OnSize, this );
 	Bind( wxEVT_LEFT_DOWN, &Canvas::OnMouseLeftDown, this );
+	Bind( wxEVT_RIGHT_DOWN, &Canvas::OnMouseRightDown, this );
 	Bind( wxEVT_LEFT_UP, &Canvas::OnMouseLeftUp, this );
+	Bind( wxEVT_RIGHT_UP, &Canvas::OnMouseRightUp, this );
 	Bind( wxEVT_MOTION, &Canvas::OnMouseMotion, this );
 	Bind( wxEVT_MOUSE_CAPTURE_LOST, &Canvas::OnMouseCaptureLost, this );
 }
@@ -25,6 +33,7 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 /*virtual*/ Canvas::~Canvas( void )
 {
 	delete context;
+	delete grab;
 }
 
 void Canvas::BindContext( void )
@@ -148,20 +157,199 @@ void Canvas::OnSize( wxSizeEvent& event )
 	Refresh();
 }
 
+void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
+{
+	if( grab )
+		return;
+
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( !puzzle )
+		return;
+
+	wxScopedPtr< Grab > newGrab( new Grab() );
+
+	newGrab->type = grabType;
+	newGrab->rotationAngle = 0.0;
+	newGrab->rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+	newGrab->rotationAngleMultiple = M_PI;
+	
+	if( !CalculateMouseLocation( mousePoint, newGrab->anchorPoint ) )
+		return;
+
+	newGrab->shape = puzzle->GetShapeContainingPoint( newGrab->anchorPoint );
+	if( !newGrab->shape )
+		return;
+
+	newGrab->pivotPoint = newGrab->shape->GetPivotPoint();
+
+	if( grabType == Grab::ROTATION )
+		newGrab->rotationAngleMultiple = newGrab->shape->GetRotationDelta();
+
+	if( !puzzle->GrabShape( *newGrab->shape, newGrab->grabbedTriangleList ) )
+		return;
+
+	for( TriangleList::iterator iter = newGrab->grabbedTriangleList.begin(); iter != newGrab->grabbedTriangleList.end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+		newGrab->originalTriangleMap.insert( std::pair< int, Triangle* >( triangle->id, triangle->Clone() ) );
+		triangle->sortKey = 1;
+	}
+
+	this->grab = newGrab.release();
+
+	CaptureMouse();
+	Refresh();
+}
+
+void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
+{
+	if( HasCapture() )
+		ReleaseCapture();
+
+	if( !grab )
+		return;
+
+	if( !commitRotation )
+		grab->rotationAngle = 0.0;
+	else
+	{
+		double remainder = fmod( grab->rotationAngle, grab->rotationAngleMultiple );
+		grab->rotationAngle += remainder;
+	}
+
+	grab->ApplyRotation();
+	Refresh();
+
+	for( TriangleList::iterator iter = grab->grabbedTriangleList.begin(); iter != grab->grabbedTriangleList.end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+		triangle->sortKey = 0;
+	}
+
+	delete grab;
+	grab = nullptr;
+}
+
+void Canvas::ManageGrab( const wxPoint& mousePoint )
+{
+	if( !grab )
+		return;
+
+	c3ga::vectorE3GA mouseLocation;
+	if( !CalculateMouseLocation( mousePoint, mouseLocation ) )
+		return;
+
+	c3ga::vectorE3GA dragVector = mouseLocation - grab->anchorPoint;
+	double dragMagnitude = c3ga::norm( dragVector );
+	dragVector = dragVector * ( 1.0 / dragMagnitude );
+
+	if( grab->type == Grab::REFLECTION )
+	{
+		const c3ga::vectorE3GA* bestReflectionAxis = nullptr;
+		double smallestDot = 0.0;
+		const VectorArray& reflectionAxisArray = grab->shape->GetReflectionAxisArray();
+		for( int i = 0; i < ( signed )reflectionAxisArray.size(); i++ )
+		{
+			const c3ga::vectorE3GA& reflectionAxis = reflectionAxisArray[i];
+			double dot = fabs( c3ga::lc( reflectionAxis, dragVector ) );
+			if( dot < smallestDot || !bestReflectionAxis )
+			{
+				bestReflectionAxis = &reflectionAxis;
+				smallestDot = dot;
+			}
+		}
+
+		if( !bestReflectionAxis )
+			return;
+
+		grab->rotationAxis = *bestReflectionAxis;
+
+		c3ga::vectorE3GA vector = grab->pivotPoint - grab->anchorPoint;
+		double ratio = c3ga::lc( c3ga::unit( vector ), dragVector * dragMagnitude ) / c3ga::norm( vector );
+		grab->rotationAngle = ratio / 2.0 * M_PI;		// TODO: Determine sign.
+	}
+	else if( grab->type == Grab::ROTATION )
+	{
+		double dot = c3ga::lc( c3ga::unit( grab->anchorPoint - grab->pivotPoint ), c3ga::unit( mouseLocation - grab->pivotPoint ) );
+		grab->rotationAngle = acos( dot );
+	}
+	else
+		return;
+
+	grab->ApplyRotation();
+	Refresh();
+}
+
 void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 {
+	if( event.ControlDown() )
+	{
+		wxPoint pickingPoint = event.GetPosition();
+		int triangleId = 0;
+		Render( GL_SELECT, &pickingPoint, &triangleId );
+
+		if( event.AltDown() )
+		{
+			// TODO: Find and remove the triangle.
+		}
+		else
+		{
+			wxMessageBox( wxString::Format( "tri-id: %d", triangleId ), "ID", wxICON_INFORMATION | wxCENTRE );
+		}
+
+		return;
+	}
+
+	InitiateGrab( event.GetPosition(), Grab::ROTATION );
+}
+
+void Canvas::OnMouseRightDown( wxMouseEvent& event )
+{
+	InitiateGrab( event.GetPosition(), Grab::REFLECTION );
 }
 
 void Canvas::OnMouseLeftUp( wxMouseEvent& event )
 {
+	FinalizeGrab();
+}
+
+void Canvas::OnMouseRightUp( wxMouseEvent& event )
+{
+	FinalizeGrab();
 }
 
 void Canvas::OnMouseMotion( wxMouseEvent& event )
 {
+	ManageGrab( event.GetPosition() );
 }
 
 void Canvas::OnMouseCaptureLost( wxMouseCaptureLostEvent& event )
 {
+	FinalizeGrab();
+}
+
+Canvas::Grab::~Grab( void )
+{
+	DeleteTriangleMap( originalTriangleMap );
+}
+
+void Canvas::Grab::ApplyRotation( void )
+{
+	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+
+		TriangleMap::iterator mapIter = originalTriangleMap.find( triangle->id );
+		if( mapIter == originalTriangleMap.end() )
+			continue;
+
+		Triangle* originalTriangle = mapIter->second;
+
+		c3ga::rotorE3GA rotor = c3ga::exp( rotationAxis * c3ga::I3 * ( -rotationAngle / 2.0 ) );
+
+		for( int i = 0; i < 3; i++ )
+			triangle->vertex[i].point = pivotPoint + c3ga::applyUnitVersor( rotor, originalTriangle->vertex[i].point - pivotPoint );
+	}
 }
 
 // Canvas.cpp

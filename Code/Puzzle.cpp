@@ -29,12 +29,12 @@ void Puzzle::ResetTriangles( void )
 {
 	DeleteTriangleList( *triangleList );
 
-	for( int i = -10; i <= 10; i++ )
+	for( int i = -1; i <= 1; i++ )
 	{
-		for( int j = -10; j <= 10; j++ )
+		for( int j = -1; j <= 1; j++ )
 		{
-			double w = 1.0;
-			double h = 1.0;
+			double w = 8.0;
+			double h = 8.0;
 			double x = double(i) * w;
 			double y = double(j) * h;
 
@@ -87,7 +87,7 @@ const Rectangle_* Puzzle::GetRectangle( void ) const
 	return rectangle;
 }
 
-void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
+bool Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 {
 	modified = true;
 
@@ -117,6 +117,8 @@ void Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 		const Triangle* shapeTriangle = *iter;
 		CollectTrianglesInTriangle( *shapeTriangle, grabbedTriangleList );
 	}
+
+	return( grabbedTriangleList.size() > 0 ? true : false );
 }
 
 void Puzzle::TessellateTriangles( const LineSegment& lineSegment )
@@ -144,7 +146,7 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 	for( TriangleList::iterator iter = triangleList->begin(); iter != triangleList->end(); iter++ )
 	{
 		Triangle* triangle = *iter;
-		if( triangleCover.Covers( *triangle ) )
+		if( triangleCover.Covers( *triangle, 1e-5 ) )
 			collectedTriangleList.push_back( triangle );
 	}
 }
@@ -153,6 +155,16 @@ void Puzzle::Render( int renderMode ) const
 {
 	if( renderMode == GL_RENDER )
 	{
+		struct CompareFunctor
+		{
+			bool operator()( const Triangle* triangleA, const Triangle* triangleB )
+			{
+				return( triangleA->sortKey < triangleB->sortKey ? true : false );
+			}
+		};
+
+		triangleList->sort( CompareFunctor() );
+
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		glBegin( GL_TRIANGLES );
 

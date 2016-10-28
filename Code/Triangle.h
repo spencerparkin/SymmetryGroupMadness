@@ -14,8 +14,8 @@ public:
 
 	void MakeLineSegments( LineSegmentList& lineSegmentList ) const;
 
-	bool Covers( const Triangle& triangle ) const;
-	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
+	bool Covers( const Triangle& triangle, double eps = 1e-7 ) const;
+	bool ContainsPoint( const c3ga::vectorE3GA& point, double eps = 0.0 ) const;
 	bool IsDegenerate( double eps = 1e-7 ) const;
 
 	void Render( int renderMode ) const;
@@ -30,6 +30,7 @@ public:
 	Vertex vertex[3];
 	c3ga::vectorE3GA color;
 	int id;
+	int sortKey;
 
 	static int nextId;
 };
