@@ -30,10 +30,13 @@
 
 # Intermediates/targets
 Debug/
+x64/
 
 # Dev-studio stuff
 *.suo
 *.opensdf
+*.vc.db
+*.vc.vc.opendb
 *.sdf
 *.user
 .vs/
