@@ -151,7 +151,7 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 	}
 }
 
-void Puzzle::Render( int renderMode ) const
+void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 {
 	if( renderMode == GL_RENDER )
 	{
@@ -179,12 +179,30 @@ void Puzzle::Render( int renderMode ) const
 	else if( renderMode == GL_SELECT )
 	{
 		glPushName(0);
+
+		if( !pickShapes )
+		{
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+			for( TriangleList::const_iterator iter = triangleList->cbegin(); iter != triangleList->cend(); iter++ )
+			{
+				const Triangle* triangle = *iter;
+				glLoadName( triangle->id );
+
+				glBegin( GL_TRIANGLES );
+				triangle->Render( renderMode );
+				glEnd();
+			}
+		}
 	}
 
-	for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
+	if( renderMode == GL_RENDER || ( renderMode == GL_SELECT && pickShapes ) )
 	{
-		const Shape* shape = *iter;
-		shape->Render( renderMode );
+		for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
+		{
+			const Shape* shape = *iter;
+			shape->Render( renderMode );
+		}
 	}
 }
 
@@ -234,6 +252,18 @@ Shape* Puzzle::GetShapeContainingPoint( const c3ga::vectorE3GA& point )
 		Shape* shape = *iter;
 		if( shape->ContainsPoint( point ) )
 			return shape;
+	}
+
+	return nullptr;
+}
+
+Triangle* Puzzle::GetTriangleById( int triangleId )
+{
+	for( TriangleList::iterator iter = triangleList->begin(); iter != triangleList->end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+		if( triangle->id == triangleId )
+			return triangle;
 	}
 
 	return nullptr;

@@ -18,11 +18,12 @@ public:
 
 	bool GrabShape( const Shape& shape, TriangleList& grabbedTriangleList );
 
-	void Render( int renderMode ) const;
+	void Render( int renderMode, bool pickShapes = true ) const;
 
 	void ProcessHitRecords( unsigned int* hitBuffer, int hitBufferSize, int hitCount, int* triangleId );
 	Shape* GetShapeOwningTriangle( int triangleId );
 	Shape* GetShapeContainingPoint( const c3ga::vectorE3GA& point );
+	Triangle* GetTriangleById( int triangleId );
 
 	bool Save( void );
 	bool Load( void );

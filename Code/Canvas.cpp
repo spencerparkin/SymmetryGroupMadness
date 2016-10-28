@@ -44,8 +44,10 @@ void Canvas::BindContext( void )
 	SetCurrent( *context );
 }
 
-void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/ )
+void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/, bool pickShapes /*= true*/ )
 {
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+
 	BindContext();
 
 	glClearColor( 0.f, 0.f, 0.f, 1.f );
@@ -64,17 +66,6 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 	GLint viewport[4];
 	glGetIntegerv( GL_VIEWPORT, viewport );
 
-	if( renderMode == GL_SELECT )
-	{
-		GLdouble x = pickingPoint->x;
-		GLdouble y = GLdouble( viewport[3] ) - GLdouble( pickingPoint->y );
-		GLdouble w = 2.0;
-		GLdouble h = 2.0;
-		gluPickMatrix( x, y, w, h, viewport );
-	}
-
-	Puzzle* puzzle = wxGetApp().GetPuzzle();
-
 	GLdouble aspectRatio = GLdouble( viewport[2] ) / GLdouble( viewport[3] );
 
 	Rectangle_ rectangle;
@@ -91,6 +82,16 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
+
+	if( renderMode == GL_SELECT )
+	{
+		GLdouble x = pickingPoint->x;
+		GLdouble y = GLdouble( viewport[3] ) - GLdouble( pickingPoint->y );
+		GLdouble w = 2.0;
+		GLdouble h = 2.0;
+		gluPickMatrix( x, y, w, h, viewport );
+	}
+
 	gluOrtho2D( rectangle.xMin, rectangle.xMax, rectangle.yMin, rectangle.yMax );
 
 	glMatrixMode( GL_MODELVIEW );
@@ -98,7 +99,7 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 	gluLookAt( 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 );
 	
 	if( puzzle )
-		puzzle->Render( renderMode );
+		puzzle->Render( renderMode, pickShapes );
 
 	glFlush();
 
@@ -214,7 +215,7 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	else
 	{
 		double remainder = fmod( grab->rotationAngle, grab->rotationAngleMultiple );
-		grab->rotationAngle += remainder;
+		//grab->rotationAngle += remainder;
 	}
 
 	grab->ApplyRotation();
@@ -286,16 +287,13 @@ void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 	{
 		wxPoint pickingPoint = event.GetPosition();
 		int triangleId = 0;
-		Render( GL_SELECT, &pickingPoint, &triangleId );
+		Render( GL_SELECT, &pickingPoint, &triangleId, false );
 
-		if( event.AltDown() )
-		{
-			// TODO: Find and remove the triangle.
-		}
-		else
-		{
-			wxMessageBox( wxString::Format( "tri-id: %d", triangleId ), "ID", wxICON_INFORMATION | wxCENTRE );
-		}
+		wxMessageBox( wxString::Format( "tri-id: %d", triangleId ), "ID", wxICON_INFORMATION | wxCENTRE );
+		
+		Triangle* triangle = wxGetApp().GetPuzzle()->GetTriangleById( triangleId );
+		if( triangle )
+			triangle->sortKey = 1;
 
 		return;
 	}

@@ -17,7 +17,7 @@ public:
 
 private:
 
-	void Render( GLenum renderMode, const wxPoint* pickingPoint = nullptr, int* triangleId = nullptr );
+	void Render( GLenum renderMode, const wxPoint* pickingPoint = nullptr, int* triangleId = nullptr, bool pickShapes = true );
 
 	void OnPaint( wxPaintEvent& event );
 	void OnSize( wxSizeEvent& event );
