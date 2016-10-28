@@ -68,7 +68,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 		// There may be duplicate vertices put on the list, but that's okay.
 		for( int k = 0; k < 2; k++ )
 			if( edge.ContainsPoint( chord.vertex[k] ) )
-				vertexArray.push_back( chord.vertex[k] );
+				vertexArray.push_back( chord.vertex[k] );	// TODO: New UVs may be as easy as lerps along edges.
 	}
 
 	wxASSERT( vertexArray.size() >= 5 );
