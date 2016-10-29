@@ -36,10 +36,10 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 			edgeHitArray.push_back( intersectionPoint );
 	}
 
-	if( edgeHitArray.size() <= 1 )
-		return false;
-
-	wxASSERT( edgeHitArray.size() == 2 );
+	// 0 hits -- we don't cut the triangle.
+	// 1 hit -- we're tangent and so don't cut.
+	// 2 hits -- we may cut the triangle.
+	// 3 hits -- we're tangential here too.
 	if( edgeHitArray.size() != 2 )
 		return false;
 
@@ -92,6 +92,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	}
 
 	// This is not necessarily the best tessellation, but it should work.
+	// I can conceive a recursive way of doing this, but I'm not sure what that gains us.
 	for( int i = 0; i < vertexArray.size() - 2; i++ )
 	{
 		Triangle* triangle = new Triangle();
