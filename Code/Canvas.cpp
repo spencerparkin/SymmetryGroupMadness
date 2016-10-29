@@ -4,10 +4,12 @@
 #include "Application.h"
 #include "Puzzle.h"
 #include "Triangle.h"
+#include "Frame.h"
 #include "Shape.h"
 #include <gl/GLU.h>
 #include <wx/scopedptr.h>
 #include <wx/msgdlg.h>
+#include <math.h>
 
 int Canvas::attributeList[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 
@@ -214,8 +216,8 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 		grab->rotationAngle = 0.0;
 	else
 	{
-		double remainder = fmod( grab->rotationAngle, grab->rotationAngleMultiple );
-		//grab->rotationAngle += remainder;
+		double rotationAngleRemainder = remainder( grab->rotationAngle, grab->rotationAngleMultiple );
+		grab->rotationAngle -= rotationAngleRemainder;
 	}
 
 	grab->ApplyRotation();
@@ -229,6 +231,10 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 
 	delete grab;
 	grab = nullptr;
+
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( puzzle )
+		wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( wxString::Format( "Triangles: %d", puzzle->GetTriangleCount() ) );
 }
 
 void Canvas::ManageGrab( const wxPoint& mousePoint )
@@ -271,8 +277,15 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 	}
 	else if( grab->type == Grab::ROTATION )
 	{
-		double dot = c3ga::lc( c3ga::unit( grab->anchorPoint - grab->pivotPoint ), c3ga::unit( mouseLocation - grab->pivotPoint ) );
+		c3ga::vectorE3GA anchorVector = c3ga::unit( grab->anchorPoint - grab->pivotPoint );
+		c3ga::vectorE3GA mouseVector = c3ga::unit( mouseLocation - grab->pivotPoint );
+		
+		double dot = c3ga::lc( anchorVector, mouseVector );
 		grab->rotationAngle = acos( dot );
+
+		c3ga::bivectorE3GA bivector = anchorVector ^ mouseVector;
+		if( bivector.get_e1_e2() < 0.0 )
+			grab->rotationAngle = 2.0 * M_PI - grab->rotationAngle;
 	}
 	else
 		return;

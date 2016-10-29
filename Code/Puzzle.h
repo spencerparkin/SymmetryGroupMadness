@@ -36,9 +36,8 @@ public:
 	//       that coincide at a single point in space and make sure they all share the same UVs.
 
 	int GetLevel( void ) const { return level; }
-
+	int GetTriangleCount( void ) const { return ( int )triangleList->size(); }
 	const ShapeList& GetShapeList( void ) { return shapeList; }
-
 	const Rectangle_* GetRectangle( void ) const;
 
 private:
