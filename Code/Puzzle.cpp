@@ -304,6 +304,18 @@ bool Puzzle::SetupLevel( int level )
 			shapeList.push_back( shape );
 			return true;
 		}
+		case 3:
+		{
+			Shape* shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -4.0, -2.0, 0.0 ), 6.0, 3 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, -2.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
+			shapeList.push_back( shape );
+
+			return true;
+		}
 	}
 
 	return false;
