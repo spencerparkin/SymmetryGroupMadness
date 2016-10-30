@@ -5,6 +5,7 @@
 #include "Triangle.h"
 #include "LineSegment.h"
 #include "Rectangle.h"
+#include "Texture.h"
 #include <wx/glcanvas.h>
 
 Puzzle::Puzzle( void )
@@ -13,6 +14,7 @@ Puzzle::Puzzle( void )
 	level = 0;
 	triangleList = new TriangleList();
 	rectangle = nullptr;
+	texture = nullptr;
 }
 
 /*virtual*/ Puzzle::~Puzzle( void )
@@ -23,6 +25,7 @@ Puzzle::Puzzle( void )
 	DeleteShapeList( shapeList );
 
 	delete rectangle;
+	delete texture;
 }
 
 void Puzzle::ResetTriangles( void )
@@ -286,7 +289,17 @@ bool Puzzle::SetupLevel( int level )
 	ResetTriangles();
 	DeleteShapeList( shapeList );
 
-	//http://www.pixelstalk.net/landscape-wallpapers-hd/ <-- need to get copyright info.
+	if( !texture )
+		texture = new Texture();
+
+	texture->Unload();
+	
+	wxString texName = wxString::Format( "Texture%d.jpg", ( level % 15 ) + 1 );
+	wxArrayString texFileArray;
+	texFileArray.Add( "Textures/" + texName );
+	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
+	if( !texture->Load( texFileArray ) )
+		return false;
 
 	switch( level )
 	{

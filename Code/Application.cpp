@@ -5,6 +5,7 @@
 #include "Puzzle.h"
 #include "Random.h"
 #include <wx/msgdlg.h>
+#include <wx/image.h>
 
 wxIMPLEMENT_APP( Application );
 
@@ -25,6 +26,8 @@ Application::Application( void )
 {
 	if( !wxApp::OnInit() )
 		return false;
+
+	wxInitAllImageHandlers();
 
 	frame = new Frame();
 	frame->SetSize( 50, 50, 700, 700 );

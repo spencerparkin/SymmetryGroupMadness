@@ -8,6 +8,7 @@ class Shape;
 class LineSegment;
 class Triangle;
 class Rectangle_;
+class Texture;
 
 class Puzzle
 {
@@ -50,6 +51,7 @@ private:
 	ShapeList shapeList;
 	int level;
 	mutable Rectangle_* rectangle;
+	Texture* texture;
 };
 
 // Puzzle.h

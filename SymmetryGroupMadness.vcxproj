@@ -215,6 +215,7 @@
     <ClInclude Include="Code\Random.h" />
     <ClInclude Include="Code\Rectangle.h" />
     <ClInclude Include="Code\Shape.h" />
+    <ClInclude Include="Code\Texture.h" />
     <ClInclude Include="Code\Triangle.h" />
     <ClInclude Include="Code\Container.h" />
   </ItemGroup>
@@ -230,6 +231,7 @@
     <ClCompile Include="Code\Rectangle.cpp" />
     <ClCompile Include="Code\Shape.cpp" />
     <ClCompile Include="Code\Random.cpp" />
+    <ClCompile Include="Code\Texture.cpp" />
     <ClCompile Include="Code\Triangle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
