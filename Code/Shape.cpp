@@ -94,7 +94,7 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 	{
 		for( int i = 0; i < sides; i++ )
 		{
-			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] );
+			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] - pivotPoint );
 			reflectionAxisArray.push_back( axis );
 		}
 	}
@@ -102,10 +102,10 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 	{
 		for( int i = 0; i < sides / 2; i++ )
 		{
-			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] );
+			c3ga::vectorE3GA axis = c3ga::unit( vertices[i] - pivotPoint );
 			reflectionAxisArray.push_back( axis );
 
-			axis = c3ga::unit( vertices[i] + vertices[ i + 1 ] );
+			axis = c3ga::unit( vertices[i] + vertices[ i + 1 ] - pivotPoint * 2.0 );
 			reflectionAxisArray.push_back( axis );
 		}
 	}
