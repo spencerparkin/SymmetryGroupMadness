@@ -286,6 +286,8 @@ bool Puzzle::SetupLevel( int level )
 	ResetTriangles();
 	DeleteShapeList( shapeList );
 
+	//http://www.pixelstalk.net/landscape-wallpapers-hd/ <-- need to get copyright info.
+
 	switch( level )
 	{
 		case 1:
