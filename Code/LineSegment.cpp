@@ -63,7 +63,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	}
 
 	// Get vertex list in CCW order.
-	VectorArray vertexArray;	// TODO: May want to replace this with std::list< Triangle::Vertex >.
+	std::vector< Triangle::Vertex > vertexArray;
 
 	int sharedVertex = -1;
 
@@ -74,7 +74,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 		edge.vertex[0] = triangle.vertex[i].point;
 		edge.vertex[1] = triangle.vertex[j].point;
 
-		vertexArray.push_back( edge.vertex[0] );
+		vertexArray.push_back( triangle.vertex[i] );
 
 		// There may be duplicate vertices put on the list, but that's okay.
 		for( int k = 0; k < 2; k++ )
@@ -85,7 +85,14 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 				if( sharedVertex == -1 )
 					sharedVertex = ( signed )vertexArray.size();
 
-				vertexArray.push_back( chord.vertex[k] );	// TODO: New UVs may be as easy as lerps along edges.
+				Triangle::Vertex vertex;
+				vertex.point = chord.vertex[k];
+
+				double lerp = c3ga::norm( vertex.point - edge.vertex[0] ) / edge.CalculateLength();
+				vertex.u = triangle.vertex[i].u + lerp * ( triangle.vertex[j].u - triangle.vertex[i].u );
+				vertex.v = triangle.vertex[i].v + lerp * ( triangle.vertex[j].v - triangle.vertex[i].v );
+
+				vertexArray.push_back( vertex );
 			}
 		}
 	}
@@ -96,9 +103,9 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	for( int i = 0; i < vertexArray.size() - 2; i++ )
 	{
 		Triangle* triangle = new Triangle();
-		triangle->vertex[0].point = vertexArray[ sharedVertex ];
-		triangle->vertex[1].point = vertexArray[ ( sharedVertex + i + 1 ) % vertexArray.size() ];
-		triangle->vertex[2].point = vertexArray[ ( sharedVertex + i + 2 ) % vertexArray.size() ];
+		triangle->vertex[0] = vertexArray[ sharedVertex ];
+		triangle->vertex[1] = vertexArray[ ( sharedVertex + i + 1 ) % vertexArray.size() ];
+		triangle->vertex[2] = vertexArray[ ( sharedVertex + i + 2 ) % vertexArray.size() ];
 		if( triangle->IsDegenerate() )
 			delete triangle;
 		else
