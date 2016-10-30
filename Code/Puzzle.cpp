@@ -7,7 +7,10 @@
 #include "Rectangle.h"
 #include "Texture.h"
 #include "BoxTree.h"
+#include "Application.h"
+#include "Frame.h"
 #include <wx/glcanvas.h>
+#include <wx/msgdlg.h>
 
 Puzzle::Puzzle( void )
 {
@@ -339,10 +342,19 @@ bool Puzzle::SetupLevel( int level )
 
 	texture->Unload();
 	
-	wxString texName = wxString::Format( "Texture%d.jpg", ( level % 15 ) + 1 );
+	wxString texName = wxString::Format( "Texture%d.jpg", ( level % MAX_IMAGES ) );
 	wxArrayString texFileArray;
-	texFileArray.Add( "Textures/" + texName );
-	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
+
+	if( level < MAX_LEVELS )
+	{
+		texFileArray.Add( "Textures/" + texName );
+		texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
+	}
+	else
+	{
+		texFileArray.Add( "Textures/Winner.jpg" );
+	}
+
 	if( !texture->Load( texFileArray ) )
 		return false;
 
@@ -369,13 +381,19 @@ bool Puzzle::SetupLevel( int level )
 		case 3:
 		{
 			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -4.0, -2.0, 0.0 ), 6.0, 3 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -4.0, 0.0, 0.0 ), 6.0, 3 );
 			shapeList.push_back( shape );
 
 			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, -2.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, 0.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
 			shapeList.push_back( shape );
 
+			return true;
+		}
+		case 4:
+		{
+			// The "winner" level has no shapes so that there's no way to advance further.
+			wxMessageBox( "Congratulations!  You've solved every level!  More levels will be added as new releases of this program are made.", "You win!", wxOK | wxCENTRE, wxGetApp().GetFrame() );
 			return true;
 		}
 	}

@@ -19,6 +19,8 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 
 	grab = nullptr;
 
+	readyToAdvanceToNextLevel = false;
+
 	hitBuffer = nullptr;
 	hitBufferSize = 0;
 
@@ -162,11 +164,20 @@ void Canvas::OnSize( wxSizeEvent& event )
 
 void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 {
-	if( grab )
-		return;
-
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( !puzzle )
+		return;
+
+	if( readyToAdvanceToNextLevel )
+	{
+		puzzle->SetupLevel( puzzle->GetLevel() + 1 );
+		wxGetApp().UpdateFrameTitle();
+		readyToAdvanceToNextLevel = false;
+		Refresh();
+		return;
+	}
+
+	if( grab )
 		return;
 
 	wxScopedPtr< Grab > newGrab( new Grab() );
@@ -221,7 +232,6 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	}
 
 	grab->ApplyRotation();
-	Refresh();
 
 	for( TriangleList::iterator iter = grab->grabbedTriangleList.begin(); iter != grab->grabbedTriangleList.end(); iter++ )
 	{
@@ -243,7 +253,12 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 		statusBarText += wxString::Format( " -- Triangles: %d", puzzle->GetTriangleCount() );
 
 		wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( statusBarText );
+
+		if( percentageSolved == 100.0 )
+			readyToAdvanceToNextLevel = true;
 	}
+
+	Refresh();
 }
 
 void Canvas::ManageGrab( const wxPoint& mousePoint )

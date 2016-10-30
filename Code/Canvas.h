@@ -60,6 +60,8 @@ private:
 	void ManageGrab( const wxPoint& mousePoint );
 
 	Grab* grab;
+
+	bool readyToAdvanceToNextLevel;
 };
 
 // Canvas.h

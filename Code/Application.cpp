@@ -60,10 +60,7 @@ bool Application::SetPuzzle( Puzzle* puzzle )
 
 	this->puzzle = puzzle;
 
-	if( puzzle )
-		frame->SetTitle( wxString::Format( "Symmetry Group Maddness -- Level %d", puzzle->GetLevel() ) );
-	else
-		frame->SetTitle( "Symmetry Group Madness" );
+	UpdateFrameTitle();
 
 	return true;
 }
@@ -71,6 +68,14 @@ bool Application::SetPuzzle( Puzzle* puzzle )
 Puzzle* Application::GetPuzzle( void )
 {
 	return puzzle;
+}
+
+void Application::UpdateFrameTitle( void )
+{
+	if( puzzle )
+		frame->SetTitle( wxString::Format( "Symmetry Group Maddness -- Level %d", puzzle->GetLevel() ) );
+	else
+		frame->SetTitle( "Symmetry Group Madness" );
 }
 
 // Application.cpp

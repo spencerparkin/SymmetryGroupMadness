@@ -25,6 +25,8 @@ public:
 
 	Random* GetRandom( void ) { return random; }
 
+	void UpdateFrameTitle( void );
+
 private:
 
 	Frame* frame;

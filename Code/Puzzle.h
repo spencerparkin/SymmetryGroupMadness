@@ -40,6 +40,8 @@ public:
 	const ShapeList& GetShapeList( void ) { return shapeList; }
 	const Rectangle_* GetRectangle( void ) const;
 
+	enum { MAX_LEVELS = 4, MAX_IMAGES = 14 };
+
 private:
 
 	void ResetTriangles( void );
