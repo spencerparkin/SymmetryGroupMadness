@@ -4,6 +4,8 @@
 
 #include "c3ga/c3ga.h"
 
+class Texture;
+
 class Rectangle_
 {
 public:
@@ -16,7 +18,7 @@ public:
 
 	void LinearMap( const Rectangle_& targetRectangle, const c3ga::vectorE3GA& pointIn, c3ga::vectorE3GA& pointOut ) const;
 
-	void CalculateUVs( const c3ga::vectorE3GA& point, double& u, double& v ) const;
+	void CalculateUVs( const c3ga::vectorE3GA& point, double& u, double& v, const Texture* texture ) const;
 
 	double GetAspectRatio( void ) const;
 	double GetWidth( void ) const;

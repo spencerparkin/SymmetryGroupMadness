@@ -18,6 +18,8 @@ public:
 
 	bool Bind( void );
 
+	const wxImage* GetImage( void ) const { return image; }
+
 private:
 
 	GLuint texName;

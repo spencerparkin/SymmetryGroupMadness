@@ -54,7 +54,10 @@ void Puzzle::ResetTriangles( void )
 			triangleList->push_back( triangle );
 		}
 	}
+}
 
+void Puzzle::RecalculateAllUVs( void )
+{
 	GetRectangle();
 
 	for( TriangleList::iterator iter = triangleList->begin(); iter != triangleList->end(); iter++ )
@@ -62,7 +65,7 @@ void Puzzle::ResetTriangles( void )
 		Triangle* triangle = *iter;
 
 		for( int i = 0; i < 3; i++ )
-			rectangle->CalculateUVs( triangle->vertex[i].point, triangle->vertex[i].u, triangle->vertex[i].v );
+			rectangle->CalculateUVs( triangle->vertex[i].point, triangle->vertex[i].u, triangle->vertex[i].v, texture );
 	}
 }
 
@@ -316,6 +319,8 @@ bool Puzzle::SetupLevel( int level )
 	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
 	if( !texture->Load( texFileArray ) )
 		return false;
+
+	RecalculateAllUVs();
 
 	switch( level )
 	{

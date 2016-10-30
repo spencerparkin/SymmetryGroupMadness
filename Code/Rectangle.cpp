@@ -1,6 +1,7 @@
 // Rectangle.cpp
 
 #include "Rectangle.h"
+#include "Texture.h"
 
 Rectangle_::Rectangle_( void )
 {
@@ -44,7 +45,7 @@ void Rectangle_::ExpandToMatchAspectRatio( double aspectRatio )
 	}
 	else if( thisAspectRatio < aspectRatio )
 	{
-		double xDelta = ( GetHeight() / aspectRatio - GetWidth() ) / 2.0;
+		double xDelta = ( GetHeight() * aspectRatio - GetWidth() ) / 2.0;
 		xMin -= xDelta;
 		xMax += xDelta;
 	}
@@ -74,17 +75,25 @@ double Rectangle_::GetHeight( void ) const
 	return yMax - yMin;
 }
 
-void Rectangle_::CalculateUVs( const c3ga::vectorE3GA& point, double& u, double& v ) const
+void Rectangle_::CalculateUVs( const c3ga::vectorE3GA& point, double& u, double& v, const Texture* texture ) const
 {
-	Rectangle_ textureSpace;
+	double textureWidth = texture ? double( texture->GetImage()->GetWidth() ) : 1.0;
+	double textureHeight = texture ? double( texture->GetImage()->GetHeight() ) : 1.0;
+	double textureAspectRatio = textureWidth / textureHeight;
 
-	textureSpace.xMin = 0.0;
-	textureSpace.xMax = 1.0;
-	textureSpace.yMin = 0.0;
-	textureSpace.yMax = 1.0;
+	Rectangle_ rectangle = *this;
+
+	rectangle.ExpandToMatchAspectRatio( textureAspectRatio );
+
+	Rectangle_ textureSpaceRectangle;
+
+	textureSpaceRectangle.xMin = 0.0;
+	textureSpaceRectangle.xMax = 1.0;
+	textureSpaceRectangle.yMin = 0.0;
+	textureSpaceRectangle.yMax = 1.0;
 
 	c3ga::vectorE3GA textureSpacePoint;
-	LinearMap( textureSpace, point, textureSpacePoint );
+	rectangle.LinearMap( textureSpaceRectangle, point, textureSpacePoint );
 
 	u = textureSpacePoint.get_e1();
 	v = 1.0 - textureSpacePoint.get_e2();

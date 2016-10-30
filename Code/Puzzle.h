@@ -44,6 +44,7 @@ public:
 private:
 
 	void ResetTriangles( void );
+	void RecalculateAllUVs( void );
 	void TessellateTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
 
