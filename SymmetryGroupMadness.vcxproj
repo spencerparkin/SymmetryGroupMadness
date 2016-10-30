@@ -207,6 +207,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Code\Application.h" />
+    <ClInclude Include="Code\BoxTree.h" />
     <ClInclude Include="Code\c3ga\c3ga.h" />
     <ClInclude Include="Code\Canvas.h" />
     <ClInclude Include="Code\Frame.h" />
@@ -221,6 +222,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Application.cpp" />
+    <ClCompile Include="Code\BoxTree.cpp" />
     <ClCompile Include="Code\c3ga\c3ga.cpp" />
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp" />
     <ClCompile Include="Code\Canvas.cpp" />

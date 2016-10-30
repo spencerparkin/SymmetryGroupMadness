@@ -234,7 +234,16 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( puzzle )
-		wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( wxString::Format( "Triangles: %d", puzzle->GetTriangleCount() ) );
+	{
+		wxString statusBarText;
+
+		double percentageSolved = puzzle->CalculatePercentageSolved();
+		statusBarText = wxString::Format( "Percent solved: %%%1.2f", percentageSolved );
+
+		statusBarText += wxString::Format( " -- Triangles: %d", puzzle->GetTriangleCount() );
+
+		wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( statusBarText );
+	}
 }
 
 void Canvas::ManageGrab( const wxPoint& mousePoint )

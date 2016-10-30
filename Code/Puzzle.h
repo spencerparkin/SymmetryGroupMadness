@@ -33,8 +33,7 @@ public:
 
 	bool modified;
 
-	// TODO: A quick way to know if we're solved might be to gather all vertices from all triangles
-	//       that coincide at a single point in space and make sure they all share the same UVs.
+	double CalculatePercentageSolved( void ) const;
 
 	int GetLevel( void ) const { return level; }
 	int GetTriangleCount( void ) const { return ( int )triangleList->size(); }

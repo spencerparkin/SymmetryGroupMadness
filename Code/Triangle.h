@@ -22,12 +22,6 @@ public:
 
 	Triangle* Clone( void ) const;
 
-	struct Vertex
-	{
-		c3ga::vectorE3GA point;
-		double u, v;
-	};
-
 	Vertex vertex[3];
 	c3ga::vectorE3GA color;
 	int id;

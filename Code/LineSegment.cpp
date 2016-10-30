@@ -63,7 +63,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	}
 
 	// Get vertex list in CCW order.
-	std::vector< Triangle::Vertex > vertexArray;
+	VertexArray vertexArray;
 
 	int sharedVertex = -1;
 
@@ -85,7 +85,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 				if( sharedVertex == -1 )
 					sharedVertex = ( signed )vertexArray.size();
 
-				Triangle::Vertex vertex;
+				Vertex vertex;
 				vertex.point = chord.vertex[k];
 
 				double lerp = c3ga::norm( vertex.point - edge.vertex[0] ) / edge.CalculateLength();

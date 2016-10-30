@@ -65,6 +65,11 @@ double Rectangle_::GetAspectRatio( void ) const
 	return GetWidth() / GetHeight();
 }
 
+double Rectangle_::GetArea( void ) const
+{
+	return GetWidth() * GetHeight();
+}
+
 double Rectangle_::GetWidth( void ) const
 {
 	return xMax - xMin;
@@ -97,6 +102,15 @@ void Rectangle_::CalculateUVs( const c3ga::vectorE3GA& point, double& u, double&
 
 	u = textureSpacePoint.get_e1();
 	v = 1.0 - textureSpacePoint.get_e2();
+}
+
+bool Rectangle_::ContainsPoint( const c3ga::vectorE3GA& point ) const
+{
+	if( !( xMin <= point.get_e1() && point.get_e1() <= xMax ) )
+		return false;
+	if( !( yMin <= point.get_e2() && point.get_e2() <= yMax ) )
+		return false;
+	return true;
 }
 
 // Rectangle.cpp
