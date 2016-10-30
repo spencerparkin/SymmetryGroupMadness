@@ -394,6 +394,20 @@ bool Puzzle::SetupLevel( int level )
 		}
 		case 4:
 		{
+			double a = 6.0 / sqrt( 2.0 );
+
+			Shape* shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -a / 2.0, -a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a / 2.0, a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+
+			break;
+		}
+		case 5:
+		{
 			// The "winner" level has no shapes so that there's no way to advance further.
 			wxMessageBox( "Congratulations!  You've solved every level!  More levels will be added as new releases of this program are made.", "You win!", wxOK | wxCENTRE, wxGetApp().GetFrame() );
 			return true;
