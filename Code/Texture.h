@@ -16,6 +16,8 @@ public:
 	bool Load( const wxArrayString& texFileArray );
 	bool Unload( void );
 
+	bool Bind( void );
+
 private:
 
 	GLuint texName;

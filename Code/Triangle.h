@@ -25,6 +25,7 @@ public:
 	struct Vertex
 	{
 		c3ga::vectorE3GA point;
+		double u, v;
 	};
 
 	Vertex vertex[3];

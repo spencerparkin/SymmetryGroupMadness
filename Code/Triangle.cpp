@@ -17,6 +17,8 @@ Triangle::Triangle( void )
 	{
 		Vertex* vtx = &vertex[i];
 		vtx->point.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 );
+		vtx->u = 0.0;
+		vtx->v = 0.0;
 	}
 
 	color = wxGetApp().GetRandom()->Vector( 0.5, 1.0 );
@@ -101,6 +103,7 @@ void Triangle::Render( int renderMode ) const
 	for( int i = 0; i < 3; i++ )
 	{
 		const Vertex* vtx = &vertex[i];
+		glTexCoord2d( vtx->u, vtx->v );
 		glVertex3d( vtx->point.get_e1(), vtx->point.get_e2(), vtx->point.get_e3() );
 	}
 }

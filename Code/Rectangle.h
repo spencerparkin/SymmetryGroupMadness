@@ -14,7 +14,9 @@ public:
 	void ShrinkToMatchAspectRatio( double aspectRatio );
 	void ExpandToMatchAspectRatio( double aspectRatio );
 
-	void LinearMap( const Rectangle_& targetRectangle, c3ga::vectorE3GA& point ) const;
+	void LinearMap( const Rectangle_& targetRectangle, const c3ga::vectorE3GA& pointIn, c3ga::vectorE3GA& pointOut ) const;
+
+	void CalculateUVs( const c3ga::vectorE3GA& point, double& u, double& v ) const;
 
 	double GetAspectRatio( void ) const;
 	double GetWidth( void ) const;

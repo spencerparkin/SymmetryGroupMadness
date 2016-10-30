@@ -54,6 +54,16 @@ void Puzzle::ResetTriangles( void )
 			triangleList->push_back( triangle );
 		}
 	}
+
+	GetRectangle();
+
+	for( TriangleList::iterator iter = triangleList->begin(); iter != triangleList->end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+
+		for( int i = 0; i < 3; i++ )
+			rectangle->CalculateUVs( triangle->vertex[i].point, triangle->vertex[i].u, triangle->vertex[i].v );
+	}
 }
 
 const Rectangle_* Puzzle::GetRectangle( void ) const
@@ -168,6 +178,9 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 
 		triangleList->sort( CompareFunctor() );
 
+		if( !texture || !texture->Bind() )
+			glDisable( GL_TEXTURE_2D );
+
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		glBegin( GL_TRIANGLES );
 
@@ -181,6 +194,7 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 	}
 	else if( renderMode == GL_SELECT )
 	{
+		glDisable( GL_TEXTURE_2D );
 		glPushName(0);
 
 		if( !pickShapes )
@@ -201,6 +215,8 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 
 	if( renderMode == GL_RENDER || ( renderMode == GL_SELECT && pickShapes ) )
 	{
+		glDisable( GL_TEXTURE_2D );
+
 		for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
 		{
 			const Shape* shape = *iter;

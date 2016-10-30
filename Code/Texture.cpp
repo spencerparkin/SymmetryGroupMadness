@@ -78,4 +78,15 @@ bool Texture::Unload( void )
 	return true;
 }
 
+bool Texture::Bind( void )
+{
+	if( texName == GL_INVALID_VALUE )
+		return false;
+	
+	glEnable( GL_TEXTURE_2D );
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+	glBindTexture( GL_TEXTURE_2D, texName );
+	return true;
+}
+
 // Texture.cpp

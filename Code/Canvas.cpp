@@ -143,7 +143,7 @@ bool Canvas::CalculateMouseLocation( const wxPoint& mousePoint, c3ga::vectorE3GA
 	mouseLocation.set_e2( double( viewport[3] - mousePoint.y ) );
 	mouseLocation.set_e3( 0.0 );
 
-	viewportRectangle.LinearMap( *puzzle->GetRectangle(), mouseLocation );
+	viewportRectangle.LinearMap( *puzzle->GetRectangle(), mouseLocation, mouseLocation );
 	
 	return true;
 }
