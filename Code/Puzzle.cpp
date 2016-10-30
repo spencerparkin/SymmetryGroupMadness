@@ -360,6 +360,8 @@ bool Puzzle::SetupLevel( int level )
 
 	RecalculateAllUVs();
 
+	wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( "Left-click and drag to rotate.  Right-click and drag to reflect." );
+
 	switch( level )
 	{
 		case 1:
