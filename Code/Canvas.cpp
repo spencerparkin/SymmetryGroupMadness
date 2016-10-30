@@ -94,7 +94,7 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 		gluPickMatrix( x, y, w, h, viewport );
 	}
 
-	gluOrtho2D( rectangle.xMin, rectangle.xMax, rectangle.yMin, rectangle.yMax );
+	glOrtho( rectangle.xMin, rectangle.xMax, rectangle.yMin, rectangle.yMax, -100.0, 100.0 );
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
