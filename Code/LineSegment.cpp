@@ -23,6 +23,7 @@ LineSegment::LineSegment( const c3ga::vectorE3GA& vertex0, const c3ga::vectorE3G
 bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& tessellatedTriangleList ) const
 {
 	VectorArray edgeHitArray;
+	double eps = 1e-7;
 
 	for( int i = 0; i < 3; i++ )
 	{
@@ -33,13 +34,21 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 
 		c3ga::vectorE3GA intersectionPoint;
 		if( CalculateIntersectionWith( edge, intersectionPoint, false, true ) )
-			edgeHitArray.push_back( intersectionPoint );
+		{
+			int k;
+			for( k = 0; k < edgeHitArray.size(); k++ )
+				if( c3ga::norm( edgeHitArray[k] - intersectionPoint ) < eps )
+					break;
+
+			if( k == edgeHitArray.size() )
+				edgeHitArray.push_back( intersectionPoint );
+		}
 	}
 
 	// 0 hits -- we don't cut the triangle.
 	// 1 hit -- we're tangent and so don't cut.
-	// 2 hits -- we may cut the triangle.
-	// 3 hits -- we're tangential here too.
+	// 2 distinct hits -- we may cut the triangle.
+	// 3 distinct hits -- we're tangential here too.
 	if( edgeHitArray.size() != 2 )
 		return false;
 
@@ -56,6 +65,8 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	// Get vertex list in CCW order.
 	VectorArray vertexArray;	// TODO: May want to replace this with std::list< Triangle::Vertex >.
 
+	int sharedVertex = -1;
+
 	for( int i = 0; i < 3; i++ )
 	{
 		int j = ( i + 1 ) % 3;
@@ -67,38 +78,27 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 
 		// There may be duplicate vertices put on the list, but that's okay.
 		for( int k = 0; k < 2; k++ )
-			if( edge.ContainsPoint( chord.vertex[k] ) )
-				vertexArray.push_back( chord.vertex[k] );	// TODO: New UVs may be as easy as lerps along edges.
-	}
-
-	wxASSERT( vertexArray.size() >= 5 );
-
-	c3ga::vectorE3GA center( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 );
-	for( int i = 0; i < vertexArray.size(); i++ )
-		center += vertexArray[i];
-
-	center = center * ( 1.0 / double( vertexArray.size() ) );
-
-	double smallestDistance = 0.0;
-	int bestVertex = -1;
-	for( int i = 0; i < vertexArray.size(); i++ )
-	{
-		double distance = c3ga::norm( center - vertexArray[i] );
-		if( bestVertex == -1 || distance < smallestDistance )
 		{
-			smallestDistance = distance;
-			bestVertex = i;
+			if( edge.ContainsPoint( chord.vertex[k] ) )
+			{
+				// The shared vertex must be one of the two chord points.  Choose one arbitrarily.
+				if( sharedVertex == -1 )
+					sharedVertex = ( signed )vertexArray.size();
+
+				vertexArray.push_back( chord.vertex[k] );	// TODO: New UVs may be as easy as lerps along edges.
+			}
 		}
 	}
 
-	// This is not necessarily the best tessellation, but it should work.
-	// I can conceive a recursive way of doing this, but I'm not sure what that gains us.
+	wxASSERT( vertexArray.size() >= 5 );
+	wxASSERT( sharedVertex >= 0 );
+	
 	for( int i = 0; i < vertexArray.size() - 2; i++ )
 	{
 		Triangle* triangle = new Triangle();
-		triangle->vertex[0].point = vertexArray[ bestVertex ];
-		triangle->vertex[1].point = vertexArray[ ( bestVertex + i + 1 ) % vertexArray.size() ];
-		triangle->vertex[2].point = vertexArray[ ( bestVertex + i + 2 ) % vertexArray.size() ];
+		triangle->vertex[0].point = vertexArray[ sharedVertex ];
+		triangle->vertex[1].point = vertexArray[ ( sharedVertex + i + 1 ) % vertexArray.size() ];
+		triangle->vertex[2].point = vertexArray[ ( sharedVertex + i + 2 ) % vertexArray.size() ];
 		if( triangle->IsDegenerate() )
 			delete triangle;
 		else
