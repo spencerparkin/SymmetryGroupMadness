@@ -418,6 +418,11 @@ void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 	}
 #endif
 
+	if( event.ControlDown() && event.AltDown() && event.ShiftDown() )
+	{
+		readyToAdvanceToNextLevel = true;
+	}
+
 	InitiateGrab( event.GetPosition(), Grab::ROTATION );
 }
 
