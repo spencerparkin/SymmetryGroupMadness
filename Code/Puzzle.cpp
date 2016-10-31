@@ -12,6 +12,8 @@
 #include "Frame.h"
 #include <wx/glcanvas.h>
 #include <wx/msgdlg.h>
+#include <wx/filedlg.h>
+#include <wx/xml/xml.h>
 
 Puzzle::Puzzle( void )
 {
@@ -321,30 +323,153 @@ double Puzzle::CalculatePercentageSolved( void ) const
 	return percentageSolved;
 }
 
-bool Puzzle::Save( void )
+bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
 {
-	return false;
+	bool success = false;
+
+	do 
+	{
+		wxXmlNode* xmlRootNode = new wxXmlNode( 0, wxXML_ELEMENT_NODE, "Puzzle" );
+		wxXmlDocument xmlDocument;
+		xmlDocument.SetRoot( xmlRootNode );
+
+		if( puzzleFile.IsEmpty() )
+		{
+			wxFileDialog fileDialog( wxGetApp().GetFrame(), "Save game.", wxEmptyString, wxEmptyString, "XML files (*.xml)|*.xml", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+			if( fileDialog.ShowModal() != wxID_OK )
+				break;
+
+			puzzleFile = fileDialog.GetPath();
+		}
+
+		wxXmlNode* xmlTrianglePoolNode = new wxXmlNode( xmlRootNode, wxXML_ELEMENT_NODE, "TrianglePool" );
+
+		TriangleList::const_iterator iter = triangleList->cbegin();
+		while( iter != triangleList->cend() )
+		{
+			const Triangle* triangle = *iter;
+			wxXmlNode* xmlTriangleNode = new wxXmlNode( xmlTrianglePoolNode, wxXML_ELEMENT_NODE, "Triangle" );
+			if( !triangle->SaveToXml( xmlTriangleNode ) )
+				break;
+			iter++;
+		}
+
+		if( iter != triangleList->cend() )
+			break;
+
+		if( texture )
+		{
+			wxString texFile = texture->GetFile();
+			xmlRootNode->AddAttribute( new wxXmlAttribute( "texture", texFile ) );
+		}
+
+		xmlRootNode->AddAttribute( new wxXmlAttribute( "level", wxString::Format( "%d", level ) ) );
+
+		if( !xmlDocument.Save( puzzleFile ) )
+			break;
+
+		modified = false;
+		success = true;
+	}
+	while( false );
+
+	return success;
 }
 
-bool Puzzle::Load( void )
+bool Puzzle::Load( wxString puzzleFile /*= wxEmptyString*/ )
 {
-	return false;
+	bool success = false;
+
+	do 
+	{
+		if( puzzleFile.IsEmpty() )
+		{
+			wxFileDialog fileDialog( wxGetApp().GetFrame(), "Load game.", wxEmptyString, wxEmptyString, "XML files (*.xml)|*.xml", wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+			if( fileDialog.ShowModal() != wxID_OK )
+				break;
+
+			puzzleFile = fileDialog.GetPath();
+		}
+
+		wxXmlDocument xmlDocument;
+		if( !xmlDocument.Load( puzzleFile ) )
+			break;
+
+		wxXmlNode* xmlRootNode = xmlDocument.GetRoot();
+		if( xmlRootNode->GetName() != "Puzzle" )
+			break;
+
+		wxString levelString = xmlRootNode->GetAttribute( "level" );
+		if( levelString.IsEmpty() )
+			break;
+
+		long levelLong = 0;
+		if( !levelString.ToLong( &levelLong ) )
+			break;
+
+		level = ( int )levelLong;
+
+		wxXmlNode* xmlTrianglePoolNode = xmlRootNode->GetChildren();
+		while( xmlTrianglePoolNode && xmlTrianglePoolNode->GetName() != "TrianglePool" )
+			xmlTrianglePoolNode = xmlTrianglePoolNode->GetNext();
+
+		if( !xmlTrianglePoolNode )
+			break;
+
+		delete rectangle;
+		rectangle = nullptr;
+
+		DeleteTriangleList( *triangleList );
+
+		wxXmlNode* xmlTriangleNode = xmlTrianglePoolNode->GetChildren();
+		while( xmlTriangleNode )
+		{
+			Triangle* triangle = new Triangle();
+			triangleList->push_back( triangle );
+
+			if( !triangle->LoadFromXml( xmlTriangleNode ) )
+				break;
+
+			xmlTriangleNode = xmlTriangleNode->GetNext();
+		}
+
+		if( xmlTriangleNode )
+			break;
+
+		if( !texture )
+			texture = new Texture();
+
+		texture->Unload();
+		
+		wxString texFile = xmlRootNode->GetAttribute( "texture" );
+		if( texFile.IsEmpty() || !texture->Load( texFile ) )
+		{
+			wxArrayString texFileArray;
+			GetTextureFileArray( texFileArray );
+
+			if( !texture->Load( texFileArray ) )
+				break;
+		}
+
+		if( !CreateShapes() )
+			break;
+
+		success = true;
+	}
+	while( false );
+
+	if( !success )
+	{
+		DeleteTriangleList( *triangleList );
+		DeleteShapeList( shapeList );
+	}
+
+	return success;
 }
 
-bool Puzzle::SetupLevel( int level )
+void Puzzle::GetTextureFileArray( wxArrayString& texFileArray )
 {
-	this->level = level;
-
-	ResetTriangles();
-	DeleteShapeList( shapeList );
-
-	if( !texture )
-		texture = new Texture();
-
-	texture->Unload();
-	
 	wxString texName = wxString::Format( "Texture%d.jpg", ( level % MAX_IMAGES ) );
-	wxArrayString texFileArray;
 
 	if( level < MAX_LEVELS )
 	{
@@ -355,13 +480,43 @@ bool Puzzle::SetupLevel( int level )
 	{
 		texFileArray.Add( "Textures/Winner.jpg" );
 	}
+}
+
+bool Puzzle::SetupLevel( int level )
+{
+	this->level = level;
+
+	ResetTriangles();
+
+	if( !texture )
+		texture = new Texture();
+
+	texture->Unload();
+	
+	wxArrayString texFileArray;
+	GetTextureFileArray( texFileArray );
 
 	if( !texture->Load( texFileArray ) )
 		return false;
 
 	RecalculateAllUVs();
 
+	if( !CreateShapes() )
+		return false;
+
 	wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( "Left-click and drag to rotate.  Right-click and drag to reflect." );
+
+	if( level < 3 )
+		EnqueueScrambles( 2, 4321 );
+	else
+		EnqueueScrambles( 10, 0 );
+
+	return true;
+}
+
+bool Puzzle::CreateShapes( void )
+{
+	DeleteShapeList( shapeList );
 
 	switch( level )
 	{
@@ -372,7 +527,6 @@ bool Puzzle::SetupLevel( int level )
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
 			shapeList.push_back( shape );
 
-			EnqueueScrambles( 5, 123 );
 			return true;
 		}
 		case 2:
@@ -381,8 +535,7 @@ bool Puzzle::SetupLevel( int level )
 			Shape* shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
 			shapeList.push_back( shape );
-
-			EnqueueScrambles( 5, 0 );
+			
 			return true;
 		}
 		case 3:
@@ -395,7 +548,6 @@ bool Puzzle::SetupLevel( int level )
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, 0.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
 			shapeList.push_back( shape );
 
-			EnqueueScrambles( 10, 0 );
 			return true;
 		}
 		case 4:
@@ -410,8 +562,7 @@ bool Puzzle::SetupLevel( int level )
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a / 2.0, a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
 			shapeList.push_back( shape );
 
-			EnqueueScrambles( 10, 0 );
-			break;
+			return true;
 		}
 		case MAX_LEVELS:
 		{
@@ -420,44 +571,40 @@ bool Puzzle::SetupLevel( int level )
 			return true;
 		}
 	}
-
+	
 	return false;
 }
 
+// Note that we do nothing here to insure that the scramble actually scrambles the puzzle.
+// It would be unlikely that the scramble would only temporarily scramble the puzzle and then have it wind up in the solved state.
 void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 {
+	if( scrambleSeed == 0 )
+		scrambleSeed = ( int )time( nullptr );
+
 	srand( scrambleSeed );
 
 	scrambleQueue.clear();
 
 	Random* random = wxGetApp().GetRandom();
 
-	Shape* lastShape = nullptr;
+	ShapeList::iterator shapeIter = shapeList.begin();
+	if( shapeIter == shapeList.end() )
+		return;
+
 	for( int i = 0; i < scrambleCount; i++ )
 	{
 		Scramble scramble;
 		scramble.animationAngle = 0.0;
+		scramble.shape = *shapeIter;
 
-		do
-		{
-			int j = random->Integer( 0, shapeList.size() - 1 );
-			ShapeList::iterator iter = shapeList.begin();
-			while( j > 0 )
-			{
-				iter++;
-				j--;
-			}
+		shapeIter++;
+		if( shapeIter == shapeList.end() )
+			shapeIter = shapeList.begin();
 
-			scramble.shape = *iter;
-		}
-		while( scramble.shape == lastShape && shapeList.size() > 1 );
-
-		lastShape = scramble.shape;
-
-		if( ( shapeList.size() > 2 && i % 2 == 0 ) || ( i % 4 > 2 ) )
+		if( ( shapeList.size() != 2 && ( i % 2 == 0 ) ) || ( i % 4 > 2 ) )
 		{
 			int cyclicSubgroupOrder = int( 2.0 * M_PI / scramble.shape->GetRotationDelta() );
-
 			scramble.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 			scramble.rotationAngle = double( random->Integer( 1, cyclicSubgroupOrder - 1 ) ) * scramble.shape->GetRotationDelta();
 		}

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Container.h"
+#include <wx/string.h>
+#include <wx/arrstr.h>
 
 class Shape;
 class LineSegment;
@@ -26,12 +28,12 @@ public:
 	Shape* GetShapeContainingPoint( const c3ga::vectorE3GA& point );
 	Triangle* GetTriangleById( int triangleId );
 
-	bool Save( void );
-	bool Load( void );
+	bool Save( wxString puzzleFile = wxEmptyString ) const;
+	bool Load( wxString puzzleFile = wxEmptyString );
 
 	bool SetupLevel( int level );
 
-	bool modified;
+	mutable bool modified;
 
 	double CalculatePercentageSolved( void ) const;
 
@@ -51,6 +53,8 @@ private:
 	void RecalculateAllUVs( void );
 	void TessellateTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
+	bool CreateShapes( void );
+	void GetTextureFileArray( wxArrayString& texFileArray );
 
 	TriangleList* triangleList;
 	ShapeList shapeList;

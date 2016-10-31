@@ -4,6 +4,7 @@
 
 #include "c3ga/c3ga.h"
 #include "Container.h"
+#include <wx/xml/xml.h>
 
 class Triangle
 {
@@ -21,6 +22,9 @@ public:
 	void Render( int renderMode ) const;
 
 	Triangle* Clone( void ) const;
+
+	bool SaveToXml( wxXmlNode* xmlNode ) const;
+	bool LoadFromXml( const wxXmlNode* xmlNode );
 
 	Vertex vertex[3];
 	c3ga::vectorE3GA color;

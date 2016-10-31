@@ -108,4 +108,67 @@ void Triangle::Render( int renderMode ) const
 	}
 }
 
+bool Triangle::SaveToXml( wxXmlNode* xmlNode ) const
+{
+	for( int i = 0; i < 3; i++ )
+	{
+		const Vertex* vtx = &vertex[i];
+
+		wxXmlNode* xmlVertexNode = new wxXmlNode( xmlNode, wxXML_ELEMENT_NODE, "Vertex" );
+		xmlVertexNode->AddAttribute( new wxXmlAttribute( "order", wxString::Format( "%d", i ) ) );
+		
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "X" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e1() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Y" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e2() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Z" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e3() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "U" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->u ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "V" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->v ) );
+	}
+
+	return true;
+}
+
+bool Triangle::LoadFromXml( const wxXmlNode* xmlNode )
+{
+	for( int i = 0; i < 3; i++ )
+	{
+		Vertex* vtx = &vertex[i];
+
+		wxXmlNode* xmlVertexNode = xmlNode->GetChildren();
+		while( xmlVertexNode && xmlVertexNode->GetAttribute( "order" ) != wxString::Format( "%d", i ) )
+			xmlVertexNode = xmlVertexNode->GetNext();
+
+		if( !xmlVertexNode )
+			return false;
+
+		wxXmlNode* xmlComponentNode = xmlVertexNode->GetChildren();
+		while( xmlComponentNode )
+		{
+			if( !xmlComponentNode->GetChildren() )
+				return false;
+
+			double component = 0.0;
+			wxString content = xmlComponentNode->GetChildren()->GetContent();
+			if( !content.ToDouble( &component ) )
+				return false;
+
+			if( xmlComponentNode->GetName() == "X" )
+				vtx->point.set_e1( component );
+			else if( xmlComponentNode->GetName() == "Y" )
+				vtx->point.set_e2( component );
+			else if( xmlComponentNode->GetName() == "Z" )
+				vtx->point.set_e3( component );
+			else if( xmlComponentNode->GetName() == "U" )
+				vtx->u = component;
+			else if( xmlComponentNode->GetName() == "V" )
+				vtx->v = component;
+			else
+				return false;
+
+			xmlComponentNode = xmlComponentNode->GetNext();
+		}
+	}
+
+	return true;
+}
+
 // Triangle.cpp

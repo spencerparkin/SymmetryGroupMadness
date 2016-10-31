@@ -19,6 +19,7 @@ public:
 	bool Bind( void );
 
 	const wxImage* GetImage( void ) const { return image; }
+	const wxString& GetFile( void ) const { return texFile; }
 
 private:
 
