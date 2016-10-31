@@ -56,6 +56,7 @@ private:
 
 		void ApplyRotation( void );
 		void GenerateOriginalTriangleMap( void );
+		void ResetSortKeys( void );
 	};
 
 	void InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType );

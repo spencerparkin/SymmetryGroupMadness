@@ -74,6 +74,7 @@ bool Canvas::AnimateScrambles( void )
 		{
 			grab->rotationAngle = scramble.rotationAngle;
 			grab->ApplyRotation();
+			grab->ResetSortKeys();
 			delete grab;
 			grab = nullptr;
 		}
@@ -302,13 +303,7 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	}
 
 	grab->ApplyRotation();
-
-	for( TriangleList::iterator iter = grab->grabbedTriangleList.begin(); iter != grab->grabbedTriangleList.end(); iter++ )
-	{
-		Triangle* triangle = *iter;
-		triangle->sortKey = 0;
-	}
-
+	grab->ResetSortKeys();
 	delete grab;
 	grab = nullptr;
 
@@ -449,6 +444,15 @@ void Canvas::OnMouseCaptureLost( wxMouseCaptureLostEvent& event )
 Canvas::Grab::~Grab( void )
 {
 	DeleteTriangleMap( originalTriangleMap );
+}
+
+void Canvas::Grab::ResetSortKeys( void )
+{
+	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+		triangle->sortKey = 0;
+	}
 }
 
 void Canvas::Grab::ApplyRotation( void )
