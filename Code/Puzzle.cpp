@@ -221,7 +221,7 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 		}
 	}
 
-	if( renderMode == GL_RENDER || ( renderMode == GL_SELECT && pickShapes ) )
+	if( /*renderMode == GL_RENDER ||*/ ( renderMode == GL_SELECT && pickShapes ) )
 	{
 		glDisable( GL_TEXTURE_2D );
 

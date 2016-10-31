@@ -388,6 +388,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 
 void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 {
+#if 0
 	if( event.ControlDown() )
 	{
 		wxPoint pickingPoint = event.GetPosition();
@@ -412,6 +413,7 @@ void Canvas::OnMouseLeftDown( wxMouseEvent& event )
 
 		return;
 	}
+#endif
 
 	InitiateGrab( event.GetPosition(), Grab::ROTATION );
 }
