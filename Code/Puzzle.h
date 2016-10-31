@@ -42,7 +42,7 @@ public:
 	const ShapeList& GetShapeList( void ) { return shapeList; }
 	const Rectangle_* GetRectangle( void ) const;
 
-	enum { MAX_LEVELS = 5, MAX_IMAGES = 14 };
+	enum { MAX_LEVELS = 7, MAX_IMAGES = 14 };
 
 	ScrambleList scrambleQueue;
 

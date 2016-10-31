@@ -113,8 +113,56 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 	delete[] vertices;
 }
 
-void MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle /*= 0.0*/ )
+void Shape::MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle /*= 0.0*/ )
 {
+}
+
+void Shape::MakeRectangle( const c3ga::vectorE3GA& center, double width, double height, double tiltAngle /*= 0.0*/ )
+{
+	wxASSERT( width != height );
+
+	DeleteTriangleList( triangleList );
+	reflectionAxisArray.clear();
+	rotationDelta = M_PI;
+	pivotPoint = center;
+
+	c3ga::vectorE3GA reflectionAxis;
+
+	reflectionAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, cos( tiltAngle ), sin( tiltAngle ), 0.0 );
+	reflectionAxisArray.push_back( reflectionAxis );
+
+	reflectionAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, cos( tiltAngle + M_PI / 2.0 ), sin( tiltAngle + M_PI / 2.0 ), 0.0 );
+	reflectionAxisArray.push_back( reflectionAxis );
+
+	c3ga::vectorE3GA* vertices = new c3ga::vectorE3GA[4];
+
+	vertices[0].set( c3ga::vectorE3GA::coord_e1_e2_e3, -width / 2.0, -height / 2.0, 0.0 );
+	vertices[1].set( c3ga::vectorE3GA::coord_e1_e2_e3, width / 2.0, -height / 2.0, 0.0 );
+	vertices[2].set( c3ga::vectorE3GA::coord_e1_e2_e3, width / 2.0, height / 2.0, 0.0 );
+	vertices[3].set( c3ga::vectorE3GA::coord_e1_e2_e3, -width / 2.0, height / 2.0, 0.0 );
+
+	c3ga::vectorE3GA axis( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+	c3ga::rotorE3GA rotor;
+	rotor = c3ga::exp( axis * c3ga::I3 * ( -tiltAngle / 2.0 ) );
+
+	for( int i = 0; i < 4; i++ )
+		vertices[i] = c3ga::applyUnitVersor( rotor, vertices[i] ) + center;
+
+	Triangle* triangle = new Triangle();
+	triangle->color.set( c3ga::vectorE3GA::coord_e1_e2_e3, 1.0, 1.0, 1.0 );
+	triangle->vertex[0].point = vertices[0];
+	triangle->vertex[1].point = vertices[1];
+	triangle->vertex[2].point = vertices[2];
+	triangleList.push_back( triangle );
+
+	triangle = new Triangle();
+	triangle->color.set( c3ga::vectorE3GA::coord_e1_e2_e3, 1.0, 1.0, 1.0 );
+	triangle->vertex[0].point = vertices[0];
+	triangle->vertex[1].point = vertices[2];
+	triangle->vertex[2].point = vertices[3];
+	triangleList.push_back( triangle );
+
+	delete[] vertices;
 }
 
 // Shape.cpp

@@ -22,6 +22,7 @@ public:
 
 	void MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle = 0.0 );
 	void MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle = 0.0 );
+	void MakeRectangle( const c3ga::vectorE3GA& center, double width, double height, double tiltAngle = 0.0 );
 
 	const VectorArray& GetReflectionAxisArray( void ) const { return reflectionAxisArray; }
 	double GetRotationDelta( void ) const { return rotationDelta; }

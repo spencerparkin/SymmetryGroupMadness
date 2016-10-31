@@ -564,6 +564,43 @@ bool Puzzle::CreateShapes( void )
 
 			return true;
 		}
+		case 5:
+		{
+			double r = 6.0;
+			double a = r / sqrt( 2.0 );
+
+			Shape* shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a - a / 3.0, a / 3.0, 0.0 ), r, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -a + a / 3.0, -a / 3.0, 0.0 ), r, 4, M_PI / 4.0 );
+			shapeList.push_back( shape );
+
+			return true;
+		}
+		case 6:
+		{
+			Shape* shape = nullptr;
+
+			shape = new Shape();
+			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -5.0, 0.0 ), 12.0, 2.0, 0.0 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 5.0, 0.0 ), 12.0, 2.0, 0.0 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
+			shapeList.push_back( shape );
+
+			shape = new Shape();
+			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
+			shapeList.push_back( shape );
+
+			return true;
+		}
 		case MAX_LEVELS:
 		{
 			// The "winner" level has no shapes so that there's no way to advance further.
