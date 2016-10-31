@@ -174,20 +174,23 @@ void Puzzle::CollectTrianglesInTriangle( const Triangle& triangleCover, Triangle
 	}
 }
 
+void Puzzle::SortForRender( void )
+{
+	struct CompareFunctor
+	{
+		bool operator()( const Triangle* triangleA, const Triangle* triangleB )
+		{
+			return( triangleA->sortKey < triangleB->sortKey ? true : false );
+		}
+	};
+
+	triangleList->sort( CompareFunctor() );
+}
+
 void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 {
 	if( renderMode == GL_RENDER )
 	{
-		struct CompareFunctor
-		{
-			bool operator()( const Triangle* triangleA, const Triangle* triangleB )
-			{
-				return( triangleA->sortKey < triangleB->sortKey ? true : false );
-			}
-		};
-
-		triangleList->sort( CompareFunctor() );
-
 		if( !texture || !texture->Bind() )
 			glDisable( GL_TEXTURE_2D );
 

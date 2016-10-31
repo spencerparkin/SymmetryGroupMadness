@@ -33,6 +33,8 @@ public:
 
 	bool SetupLevel( int level );
 
+	void SortForRender( void );
+
 	mutable bool modified;
 
 	double CalculatePercentageSolved( void ) const;

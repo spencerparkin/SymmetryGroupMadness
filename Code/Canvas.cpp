@@ -94,6 +94,7 @@ bool Canvas::AnimateScrambles( void )
 			grab->rotationAxis = scramble.rotationAxis;
 			puzzle->GrabShape( *grab->shape, grab->grabbedTriangleList );
 			grab->GenerateOriginalTriangleMap();
+			puzzle->SortForRender();
 		}
 
 		grab->rotationAngle = scramble.animationAngle;
@@ -278,6 +279,7 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 		return;
 
 	newGrab->GenerateOriginalTriangleMap();
+	puzzle->SortForRender();
 
 	this->grab = newGrab.release();
 
