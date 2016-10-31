@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "BoxTree.h"
 #include "Application.h"
+#include "Random.h"
 #include "Frame.h"
 #include <wx/glcanvas.h>
 #include <wx/msgdlg.h>
@@ -370,6 +371,8 @@ bool Puzzle::SetupLevel( int level )
 			Shape* shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
 			shapeList.push_back( shape );
+
+			EnqueueScrambles( 5, 123 );
 			return true;
 		}
 		case 2:
@@ -378,6 +381,8 @@ bool Puzzle::SetupLevel( int level )
 			Shape* shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
 			shapeList.push_back( shape );
+
+			EnqueueScrambles( 5, 0 );
 			return true;
 		}
 		case 3:
@@ -390,6 +395,7 @@ bool Puzzle::SetupLevel( int level )
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, 0.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
 			shapeList.push_back( shape );
 
+			EnqueueScrambles( 10, 0 );
 			return true;
 		}
 		case 4:
@@ -404,9 +410,10 @@ bool Puzzle::SetupLevel( int level )
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a / 2.0, a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
 			shapeList.push_back( shape );
 
+			EnqueueScrambles( 10, 0 );
 			break;
 		}
-		case 5:
+		case MAX_LEVELS:
 		{
 			// The "winner" level has no shapes so that there's no way to advance further.
 			wxMessageBox( "Congratulations!  You've solved every level!  More levels will be added as new releases of this program are made.", "You win!", wxOK | wxCENTRE, wxGetApp().GetFrame() );
@@ -415,6 +422,56 @@ bool Puzzle::SetupLevel( int level )
 	}
 
 	return false;
+}
+
+void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
+{
+	srand( scrambleSeed );
+
+	scrambleQueue.clear();
+
+	Random* random = wxGetApp().GetRandom();
+
+	Shape* lastShape = nullptr;
+	for( int i = 0; i < scrambleCount; i++ )
+	{
+		Scramble scramble;
+		scramble.animationAngle = 0.0;
+
+		do
+		{
+			int j = random->Integer( 0, shapeList.size() - 1 );
+			ShapeList::iterator iter = shapeList.begin();
+			while( j > 0 )
+			{
+				iter++;
+				j--;
+			}
+
+			scramble.shape = *iter;
+		}
+		while( scramble.shape == lastShape && shapeList.size() > 1 );
+
+		lastShape = scramble.shape;
+
+		if( ( shapeList.size() > 2 && i % 2 == 0 ) || ( i % 4 > 2 ) )
+		{
+			int cyclicSubgroupOrder = int( 2.0 * M_PI / scramble.shape->GetRotationDelta() );
+
+			scramble.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+			scramble.rotationAngle = double( random->Integer( 1, cyclicSubgroupOrder - 1 ) ) * scramble.shape->GetRotationDelta();
+		}
+		else
+		{
+			int j = random->Integer( 0, scramble.shape->GetReflectionAxisArray().size() - 1 );
+			scramble.rotationAxis = scramble.shape->GetReflectionAxisArray()[j];
+			scramble.rotationAngle = M_PI;
+		}		
+		
+		scrambleQueue.push_back( scramble );
+	}
+
+	wxGetApp().GetFrame()->timer.Start(1);
 }
 
 // Puzzle.cpp

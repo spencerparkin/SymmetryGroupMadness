@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <wx/glcanvas.h>
 #include "Container.h"
 #include "Rectangle.h"
+#include <wx/glcanvas.h>
 
 class Canvas : public wxGLCanvas
 {
@@ -14,6 +14,8 @@ public:
 
 	Canvas( wxWindow* parent );
 	virtual ~Canvas( void );
+
+	bool AnimateScrambles( void );
 
 private:
 
@@ -53,6 +55,7 @@ private:
 		Type type;
 
 		void ApplyRotation( void );
+		void GenerateOriginalTriangleMap( void );
 	};
 
 	void InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType );
@@ -60,8 +63,14 @@ private:
 	void ManageGrab( const wxPoint& mousePoint );
 
 	Grab* grab;
-
+	
 	bool readyToAdvanceToNextLevel;
+
+	double frameRate;			// Frames per second.
+	double lastFrameTime;		// Seconds.
+	double animationRate;		// Radians per second.
+	int animationKey;
+	int renderKey;
 };
 
 // Canvas.h

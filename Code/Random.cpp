@@ -37,4 +37,19 @@ c3ga::vectorE3GA Random::Vector( double min, double max )
 	return vector;
 }
 
+int Random::Integer( int min, int max )
+{
+	int r = ( int )round( Number( double( min ), double( max ) ) );
+	if( r < min )
+		r = min;
+	if( r > max )
+		r = max;
+	return r;
+}
+
+bool Random::CoinToss( void )
+{
+	return( ( rand() > RAND_MAX / 2 ) ? true : false );
+}
+
 // Random.cpp

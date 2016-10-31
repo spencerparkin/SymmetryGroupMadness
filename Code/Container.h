@@ -17,6 +17,14 @@ struct Vertex
 	double u, v;
 };
 
+struct Scramble
+{
+	c3ga::vectorE3GA rotationAxis;
+	double rotationAngle;
+	double animationAngle;
+	Shape* shape;
+};
+
 typedef std::list< LineSegment* > LineSegmentList;
 typedef std::list< Triangle* > TriangleList;
 typedef std::list< Shape* > ShapeList;
@@ -25,6 +33,7 @@ typedef std::vector< c3ga::vectorE3GA > VectorArray;
 typedef std::map< int, Triangle* > TriangleMap;
 typedef std::list< Vertex > VertexList;
 typedef std::vector< Vertex > VertexArray;
+typedef std::list< Scramble > ScrambleList;
 
 // Can I merge these into one template function?
 void DeleteLineSegmentList( LineSegmentList& lineSegmentList );

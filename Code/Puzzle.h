@@ -42,8 +42,11 @@ public:
 
 	enum { MAX_LEVELS = 5, MAX_IMAGES = 14 };
 
+	ScrambleList scrambleQueue;
+
 private:
 
+	void EnqueueScrambles( int scrambleCount, int scrambleSeed );
 	void ResetTriangles( void );
 	void RecalculateAllUVs( void );
 	void TessellateTriangles( const LineSegment& lineSegment );

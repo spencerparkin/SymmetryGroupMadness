@@ -21,6 +21,12 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 
 	readyToAdvanceToNextLevel = false;
 
+	frameRate = 60.0;
+	lastFrameTime = 0.0;
+	animationRate = M_PI;
+	animationKey = 0;
+	renderKey = 0;
+
 	hitBuffer = nullptr;
 	hitBufferSize = 0;
 
@@ -48,11 +54,73 @@ void Canvas::BindContext( void )
 	SetCurrent( *context );
 }
 
+bool Canvas::AnimateScrambles( void )
+{
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( !puzzle || puzzle->scrambleQueue.size() == 0 )
+		return false;
+	
+	if( renderKey < animationKey )
+		return true;
+
+	animationKey++;
+
+	ScrambleList::iterator iter = puzzle->scrambleQueue.begin();
+	Scramble& scramble = *iter;
+	if( scramble.animationAngle >= scramble.rotationAngle )
+	{
+		wxASSERT( grab );
+		if( grab )
+		{
+			grab->rotationAngle = scramble.rotationAngle;
+			grab->ApplyRotation();
+			delete grab;
+			grab = nullptr;
+		}
+
+		puzzle->scrambleQueue.erase( iter );
+	}
+	else
+	{
+		if( !grab )
+		{
+			grab = new Grab();
+			grab->pivotPoint = scramble.shape->GetPivotPoint();
+			grab->shape = scramble.shape;
+			grab->rotationAxis = scramble.rotationAxis;
+			puzzle->GrabShape( *grab->shape, grab->grabbedTriangleList );
+			grab->GenerateOriginalTriangleMap();
+		}
+
+		grab->rotationAngle = scramble.animationAngle;
+		scramble.animationAngle += animationRate / frameRate;		// Radians per frame.
+
+		grab->ApplyRotation();
+	}
+
+	Refresh();
+	return true;
+}
+
 void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/, bool pickShapes /*= true*/ )
 {
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 
 	BindContext();
+
+	if( puzzle && puzzle->scrambleQueue.size() > 0 && renderMode == GL_RENDER )
+	{
+		double currentFrameTime = double( clock() ) / double( CLOCKS_PER_SEC );
+		if( lastFrameTime != 0.0 )
+		{
+			double deltaFrameTime = currentFrameTime - lastFrameTime;
+			frameRate = 1.0 / deltaFrameTime;
+		}
+
+		lastFrameTime = currentFrameTime;
+
+		renderKey = animationKey;
+	}
 
 	glClearColor( 0.f, 0.f, 0.f, 1.f );
 
@@ -168,6 +236,9 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 	if( !puzzle )
 		return;
 
+	if( puzzle->scrambleQueue.size() > 0 )
+		return;
+
 	if( readyToAdvanceToNextLevel )
 	{
 		puzzle->SetupLevel( puzzle->GetLevel() + 1 );
@@ -202,12 +273,7 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 	if( !puzzle->GrabShape( *newGrab->shape, newGrab->grabbedTriangleList ) )
 		return;
 
-	for( TriangleList::iterator iter = newGrab->grabbedTriangleList.begin(); iter != newGrab->grabbedTriangleList.end(); iter++ )
-	{
-		Triangle* triangle = *iter;
-		newGrab->originalTriangleMap.insert( std::pair< int, Triangle* >( triangle->id, triangle->Clone() ) );
-		triangle->sortKey = 1;
-	}
+	newGrab->GenerateOriginalTriangleMap();
 
 	this->grab = newGrab.release();
 
@@ -221,6 +287,10 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 		ReleaseCapture();
 
 	if( !grab )
+		return;
+
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( puzzle && puzzle->scrambleQueue.size() > 0 )
 		return;
 
 	if( !commitRotation )
@@ -242,7 +312,6 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	delete grab;
 	grab = nullptr;
 
-	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( puzzle )
 	{
 		wxString statusBarText;
@@ -264,6 +333,10 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 void Canvas::ManageGrab( const wxPoint& mousePoint )
 {
 	if( !grab )
+		return;
+
+	Puzzle* puzzle = wxGetApp().GetPuzzle();
+	if( !puzzle || puzzle->scrambleQueue.size() > 0 )
 		return;
 
 	c3ga::vectorE3GA mouseLocation;
@@ -297,7 +370,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 
 		c3ga::vectorE3GA vector = grab->pivotPoint - grab->anchorPoint;
 		double ratio = c3ga::lc( c3ga::unit( vector ), dragVector * dragMagnitude ) / c3ga::norm( vector );
-		grab->rotationAngle = ratio / 2.0 * M_PI;		// TODO: Determine sign.
+		grab->rotationAngle = ratio / 2.0 * M_PI;		// TODO: Determine sign.  Doesn't matter much now due to orthographic projection.
 	}
 	else if( grab->type == Grab::ROTATION )
 	{
@@ -394,6 +467,18 @@ void Canvas::Grab::ApplyRotation( void )
 
 		for( int i = 0; i < 3; i++ )
 			triangle->vertex[i].point = pivotPoint + c3ga::applyUnitVersor( rotor, originalTriangle->vertex[i].point - pivotPoint );
+	}
+}
+
+void Canvas::Grab::GenerateOriginalTriangleMap( void )
+{
+	DeleteTriangleMap( originalTriangleMap );
+
+	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
+	{
+		Triangle* triangle = *iter;
+		originalTriangleMap.insert( std::pair< int, Triangle* >( triangle->id, triangle->Clone() ) );
+		triangle->sortKey = 1;
 	}
 }
 

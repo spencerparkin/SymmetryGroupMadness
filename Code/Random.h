@@ -14,6 +14,8 @@ public:
 	double Interpolator( void );
 	double Number( double min, double max );
 	c3ga::vectorE3GA Vector( double min, double max );
+	int Integer( int min, int max );
+	bool CoinToss( void );
 };
 
 // Random.h

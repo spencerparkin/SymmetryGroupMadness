@@ -8,7 +8,7 @@
 #include <wx/aboutdlg.h>
 #include <wx/sizer.h>
 
-Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" )
+Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" ), timer( this, ID_Timer )
 {
 	wxMenu* gameMenu = new wxMenu();
 	wxMenuItem* newGameMenuItem = new wxMenuItem( gameMenu, ID_NewGame, "New Game", "Start a new game at level 1." );
@@ -42,6 +42,7 @@ Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" )
 	Bind( wxEVT_UPDATE_UI, &Frame::OnUpdateMenuItemUI, this, ID_NewGame );
 	Bind( wxEVT_UPDATE_UI, &Frame::OnUpdateMenuItemUI, this, ID_SaveGame );
 	Bind( wxEVT_UPDATE_UI, &Frame::OnUpdateMenuItemUI, this, ID_LoadGame );
+	Bind( wxEVT_TIMER, &Frame::OnTimer, this, ID_Timer );
 
 	canvas = new Canvas( this );
 
@@ -72,6 +73,14 @@ void Frame::OnAbout( wxCommandEvent& event )
 	//aboutDialogInfo.SetWebSite( "http://spencerparkin.github.io/SymmetryGroupMadness" );
 
 	wxAboutBox( aboutDialogInfo );
+}
+
+void Frame::OnTimer( wxTimerEvent& event )
+{
+	if( !canvas->AnimateScrambles() )
+	{
+		event.GetTimer().Stop();
+	}
 }
 
 void Frame::OnNewGame( wxCommandEvent& event )
