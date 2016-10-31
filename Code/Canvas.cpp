@@ -58,7 +58,10 @@ bool Canvas::AnimateScrambles( void )
 {
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( !puzzle || puzzle->scrambleQueue.size() == 0 )
+	{
+		lastFrameTime = 0.0;
 		return false;
+	}
 	
 	if( renderKey < animationKey )
 		return true;
