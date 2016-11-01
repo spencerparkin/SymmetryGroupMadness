@@ -6,7 +6,7 @@ confinement: strict
 
 apps:
   symgrpmad:
-    command: env UBUNTU_MENUPROXY=0 desktop-launch $SNAP/bin/symgrpmad
+    command: env UBUNTU_MENUPROXY=0 desktop-launch $SNAP/bin/SymmetryGroupMadness
     plugs: [home, x11, unity7]
 
 parts:
