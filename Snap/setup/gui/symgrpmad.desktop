@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Symmetry Group Madness
+Exec=symgrpmad
+Type=Application
+Icon=${SNAP}/meta/gui/icon.png
