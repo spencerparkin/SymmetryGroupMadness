@@ -481,7 +481,7 @@ void Puzzle::GetTextureFileArray( wxArrayString& texFileArray )
 	
 	texFileArray.Add( "Textures/" + texName );
 	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
-	texFileArray.Add( wxString( "../share/SymmetryGroupMadness/Textures/" ) + texName );
+	texFileArray.Add( wxString( "/usr/share/SymmetryGroupMadness/Textures/" ) + texName );
 }
 
 bool Puzzle::SetupLevel( int level )
