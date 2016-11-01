@@ -69,7 +69,7 @@ void Frame::OnAbout( wxCommandEvent& event )
 	aboutDialogInfo.SetName( "Symmetry Group Madness" );
 	aboutDialogInfo.SetVersion( "1.0" );
 	aboutDialogInfo.SetDescription( "This program is free software and distributed under the MIT license." );
-	aboutDialogInfo.SetCopyright( "Copyright (C) 2016 Spencer T. Parkin <spencertparkin@gmail.com>\nThe images in this program were screened for copyright availability." );
+	aboutDialogInfo.SetCopyright( "Copyright (C) 2016 Spencer T. Parkin <spencertparkin@gmail.com>" );
 	//aboutDialogInfo.SetWebSite( "http://spencerparkin.github.io/SymmetryGroupMadness" );
 
 	wxAboutBox( aboutDialogInfo );

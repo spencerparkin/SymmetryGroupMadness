@@ -117,11 +117,11 @@ bool Triangle::SaveToXml( wxXmlNode* xmlNode ) const
 		wxXmlNode* xmlVertexNode = new wxXmlNode( xmlNode, wxXML_ELEMENT_NODE, "Vertex" );
 		xmlVertexNode->AddAttribute( new wxXmlAttribute( "order", wxString::Format( "%d", i ) ) );
 		
-		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "X" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e1() ) );
-		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Y" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e2() ) );
-		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Z" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->point.get_e3() ) );
-		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "U" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->u ) );
-		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "V" ), wxXML_TEXT_NODE, "", wxString::Format( "%lf", vtx->v ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "X" ), wxXML_TEXT_NODE, "", wxString::Format( "%1.16f", vtx->point.get_e1() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Y" ), wxXML_TEXT_NODE, "", wxString::Format( "%1.16f", vtx->point.get_e2() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "Z" ), wxXML_TEXT_NODE, "", wxString::Format( "%1.16f", vtx->point.get_e3() ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "U" ), wxXML_TEXT_NODE, "", wxString::Format( "%1.16f", vtx->u ) );
+		new wxXmlNode( new wxXmlNode( xmlVertexNode, wxXML_ELEMENT_NODE, "V" ), wxXML_TEXT_NODE, "", wxString::Format( "%1.16f", vtx->v ) );
 	}
 
 	return true;

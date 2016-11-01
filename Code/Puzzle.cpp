@@ -110,6 +110,8 @@ const Rectangle_* Puzzle::GetRectangle( void ) const
 	return rectangle;
 }
 
+// Some sort of compression would be a nice optimization for puzzles that get heavy on the triangles.
+// In some cases, however, new triangles, I believe, are being created unnecessarily.
 bool Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 {
 	modified = true;
