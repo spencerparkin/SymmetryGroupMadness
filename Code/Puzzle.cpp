@@ -476,15 +476,12 @@ void Puzzle::GetTextureFileArray( wxArrayString& texFileArray )
 {
 	wxString texName = wxString::Format( "Texture%d.jpg", ( level % MAX_IMAGES ) );
 
-	if( level < MAX_LEVELS )
-	{
-		texFileArray.Add( "Textures/" + texName );
-		texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
-	}
-	else
-	{
-		texFileArray.Add( "Textures/Winner.jpg" );
-	}
+	if( level == MAX_LEVELS )
+		texName = "Winner.jpg";
+	
+	texFileArray.Add( "Textures/" + texName );
+	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
+	texFileArray.Add( wxString( "../share/SymmetryGroupMadness/Textures/" ) + texName );
 }
 
 bool Puzzle::SetupLevel( int level )
