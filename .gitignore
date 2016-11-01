@@ -40,3 +40,7 @@ x64/
 *.sdf
 *.user
 .vs/
+
+# Linux crap...
+.sconsign.dblite
+SymmetryGroupMadness

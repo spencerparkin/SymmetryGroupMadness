@@ -6,7 +6,7 @@
 #include "Triangle.h"
 #include "Frame.h"
 #include "Shape.h"
-#include <gl/GLU.h>
+#include <GL/glu.h>
 #include <wx/scopedptr.h>
 #include <wx/msgdlg.h>
 #include <math.h>
@@ -23,7 +23,14 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 
 	frameRate = 60.0;
 	lastFrameTime = 0.0;
+#if defined __LINUX__
+	// I really don't understand why I need to do this.
+	// The animation rate should be frame-rate independent.
+	// Whatever.  This program is a peice of crap anyway.
+	animationRate = 10 * M_PI;
+#else
 	animationRate = M_PI;
+#endif
 	animationKey = 0;
 	renderKey = 0;
 
@@ -98,7 +105,8 @@ bool Canvas::AnimateScrambles( void )
 		}
 
 		grab->rotationAngle = scramble.animationAngle;
-		scramble.animationAngle += animationRate / frameRate;		// Radians per frame.
+		double animationAngleDelta = animationRate / frameRate;		// Radians per frame.
+		scramble.animationAngle += animationAngleDelta;
 
 		grab->ApplyRotation();
 	}
@@ -290,7 +298,10 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 {
 	if( HasCapture() )
-		ReleaseCapture();
+	{
+		//ReleaseCapture();
+		ReleaseMouse();
+	}
 
 	if( !grab )
 		return;
