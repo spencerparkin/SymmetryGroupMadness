@@ -14,6 +14,7 @@
 #include <wx/msgdlg.h>
 #include <wx/filedlg.h>
 #include <wx/xml/xml.h>
+#include <wx/filename.h>
 
 Puzzle::Puzzle( void )
 {
@@ -344,7 +345,10 @@ bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
 			if( fileDialog.ShowModal() != wxID_OK )
 				break;
 
-			puzzleFile = fileDialog.GetPath();
+			wxString path = fileDialog.GetPath();
+			wxFileName fileName( path );
+			fileName.SetExt( "xml" );
+			puzzleFile = fileName.GetFullPath();
 		}
 
 		wxXmlNode* xmlTrianglePoolNode = new wxXmlNode( xmlRootNode, wxXML_ELEMENT_NODE, "TrianglePool" );
