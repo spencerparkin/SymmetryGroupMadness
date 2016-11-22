@@ -57,9 +57,8 @@ Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" ), timer( 
 
 void Frame::OnExit( wxCommandEvent& event )
 {
-	wxGetApp().SetPuzzle( nullptr );
-
-	Close( true );
+	if( wxGetApp().SetPuzzle( nullptr ) )
+		Close( true );
 }
 
 void Frame::OnAbout( wxCommandEvent& event )
