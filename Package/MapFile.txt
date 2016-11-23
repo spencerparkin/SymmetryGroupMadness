@@ -13,7 +13,7 @@
 "C:\SymmetryGroupMadness\Textures\Texture11.jpg"							"Textures\Texture11.jpg"
 "C:\SymmetryGroupMadness\Textures\Texture12.jpg"							"Textures\Texture12.jpg"
 "C:\SymmetryGroupMadness\Textures\Texture13.jpg"							"Textures\Texture13.jpg"
-"C:\SymmetryGroupMadness\Release"											"SymmetryGroupMadness.exe"
+"C:\SymmetryGroupMadness\Release\SymmetryGroupMadness.exe"					"SymmetryGroupMadness.exe"
 "C:\wxWidgets-3.0.2\lib\vc_dll\wxmsw30u_gl_vc_custom.dll"					"wxmsw30u_gl_vc_custom.dll"
 "C:\wxWidgets-3.0.2\lib\vc_dll\wxmsw30u_core_vc_custom.dll"					"wxmsw30u_core_vc_custom.dll"
 "C:\wxWidgets-3.0.2\lib\vc_dll\wxbase30u_vc_custom.dll"						"wxbase30u_vc_custom.dll"

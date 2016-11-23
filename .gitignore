@@ -41,6 +41,7 @@ x64/
 *.sdf
 *.user
 .vs/
+*.appx
 
 # Linux crap...
 .sconsign.dblite

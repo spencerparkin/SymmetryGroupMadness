@@ -7,7 +7,7 @@
   <Properties>
     <DisplayName>symgrpmad</DisplayName>
     <PublisherDisplayName>stp-dev</PublisherDisplayName>
-    <Logo>icon.png</Logo>
+    <Logo>Logo.png</Logo>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.2.1</OSMinVersion>
