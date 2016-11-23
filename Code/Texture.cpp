@@ -15,7 +15,7 @@ Texture::Texture( void )
 
 bool Texture::Load( const wxArrayString& texFileArray )
 {
-	for( int i = 0; i < texFileArray.size(); i++ )
+	for( int i = 0; i < ( int )texFileArray.size(); i++ )
 		if( Load( texFileArray[i] ) )
 			return true;
 

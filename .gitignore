@@ -30,6 +30,7 @@
 
 # Intermediates/targets
 Debug/
+Release/
 x64/
 
 # Dev-studio stuff

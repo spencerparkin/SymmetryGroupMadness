@@ -36,7 +36,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 		if( CalculateIntersectionWith( edge, intersectionPoint, false, true ) )
 		{
 			int k;
-			for( k = 0; k < edgeHitArray.size(); k++ )
+			for( k = 0; k < ( int )edgeHitArray.size(); k++ )
 				if( c3ga::norm( edgeHitArray[k] - intersectionPoint ) < eps )
 					break;
 
@@ -100,7 +100,7 @@ bool LineSegment::TessellateTriangle( const Triangle& triangle, TriangleList& te
 	wxASSERT( vertexArray.size() >= 5 );
 	wxASSERT( sharedVertex >= 0 );
 	
-	for( int i = 0; i < vertexArray.size() - 2; i++ )
+	for( int i = 0; i < ( int )vertexArray.size() - 2; i++ )
 	{
 		Triangle* triangle = new Triangle();
 		triangle->vertex[0] = vertexArray[ sharedVertex ];
