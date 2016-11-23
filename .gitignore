@@ -45,3 +45,7 @@ x64/
 # Linux crap...
 .sconsign.dblite
 SymmetryGroupMadness
+Snap/parts/
+Snap/prime/
+Snap/stage/
+*.snap

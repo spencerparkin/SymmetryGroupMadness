@@ -14,6 +14,7 @@
 #include <wx/msgdlg.h>
 #include <wx/filedlg.h>
 #include <wx/xml/xml.h>
+#include <wx/filename.h>
 
 Puzzle::Puzzle( void )
 {
@@ -344,7 +345,10 @@ bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
 			if( fileDialog.ShowModal() != wxID_OK )
 				break;
 
-			puzzleFile = fileDialog.GetPath();
+			wxString path = fileDialog.GetPath();
+			wxFileName fileName( path );
+			fileName.SetExt( "xml" );
+			puzzleFile = fileName.GetFullPath();
 		}
 
 		wxXmlNode* xmlTrianglePoolNode = new wxXmlNode( xmlRootNode, wxXML_ELEMENT_NODE, "TrianglePool" );
@@ -476,15 +480,12 @@ void Puzzle::GetTextureFileArray( wxArrayString& texFileArray )
 {
 	wxString texName = wxString::Format( "Texture%d.jpg", ( level % MAX_IMAGES ) );
 
-	if( level < MAX_LEVELS )
-	{
-		texFileArray.Add( "Textures/" + texName );
-		texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
-	}
-	else
-	{
-		texFileArray.Add( "Textures/Winner.jpg" );
-	}
+	if( level == MAX_LEVELS )
+		texName = "Winner.jpg";
+	
+	texFileArray.Add( "Textures/" + texName );
+	texFileArray.Add( wxString( wxGetenv( "SNAP" ) ) + wxString( "/share/SymmetryGroupMadness/Textures/" ) + texName );
+	texFileArray.Add( wxString( "/usr/share/SymmetryGroupMadness/Textures/" ) + texName );
 }
 
 bool Puzzle::SetupLevel( int level )

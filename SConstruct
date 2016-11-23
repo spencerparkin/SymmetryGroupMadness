@@ -4,6 +4,7 @@ import os
 
 obj_env = Environment( parse_flags = '!wx-config --cxxflags' )
 obj_env.Append( CCFLAGS = '--std=c++11' )
+obj_env.Append( CCFLAGS = '-ggdb' )
 
 cpp_source_list = Glob( 'Code/*.cpp' ) + Glob( 'Code/c3ga/*.cpp' )
 h_source_list = Glob( 'Code/*.h' ) + Glob( 'Code/c3ga/*.h' )
@@ -15,6 +16,7 @@ for source_file in cpp_source_list:
   object_list.append( object_file )
 
 prog_env = Environment( PROGNAME = 'SymmetryGroupMadness', parse_flags = '!wx-config --libs core base adv xml gl' )
+prog_env.Append( CCFLAGS = '-ggdb' )
 prog_env.Append( LIBS = '-lGL' )
 prog_env.Append( LIBS = '-lGLU' )
 prog = prog_env.Program( '$PROGNAME', source = object_list )

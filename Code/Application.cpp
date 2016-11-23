@@ -28,6 +28,7 @@ Application::Application( void )
 		return false;
 
 	wxInitAllImageHandlers();
+	wxLog::EnableLogging( false );
 
 	frame = new Frame();
 	frame->SetSize( 50, 50, 700, 700 );
