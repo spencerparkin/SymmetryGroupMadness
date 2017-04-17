@@ -162,13 +162,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;__WXMSW__;_UNICODE_;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../wxWidgets-3.0.2/include/msvc;../wxWidgets-3.0.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../wxWidgets-3.0.2/include/msvc;../wxWidgets-3.0.2/include;../../wxWidgets-3.0.2/include/msvc;../../wxWidgets-3.0.2/include;../PermutationGroup/Code;../rapidjson/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../wxWidgets-3.0.2/lib/vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../wxWidgets-3.0.2/lib/vc_x64_lib;../../wxWidgets-3.0.2/lib/vc_x64_lib;../PermutationGroup/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib;PermutationGroup.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -229,6 +229,7 @@
     <ClCompile Include="Code\c3ga\c3ga.cpp" />
     <ClCompile Include="Code\c3ga\c3ga_parse_mv.cpp" />
     <ClCompile Include="Code\Canvas.cpp" />
+    <ClCompile Include="Code\CreateShapes.cpp" />
     <ClCompile Include="Code\Frame.cpp" />
     <ClCompile Include="Code\LineSegment.cpp" />
     <ClCompile Include="Code\Container.cpp" />

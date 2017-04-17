@@ -93,5 +93,8 @@
     <ClCompile Include="Code\BoxTree.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\CreateShapes.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

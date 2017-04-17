@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include "c3ga/c3ga.h"
+#include "Permutation.h"
 
 class LineSegment;
 class Triangle;
@@ -23,6 +24,7 @@ struct Scramble
 	double rotationAngle;
 	double animationAngle;
 	Shape* shape;
+	Permutation actionPerm;
 };
 
 typedef std::list< LineSegment* > LineSegmentList;

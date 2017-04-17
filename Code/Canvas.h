@@ -6,6 +6,8 @@
 #include "Rectangle.h"
 #include <wx/glcanvas.h>
 
+class Puzzle;
+
 class Canvas : public wxGLCanvas
 {
 public:
@@ -53,8 +55,9 @@ private:
 		const Shape* shape;
 		enum Type { ROTATION, REFLECTION };
 		Type type;
+		Permutation actionPerm;
 
-		void ApplyRotation( void );
+		void ApplyRotation( Puzzle* puzzle = nullptr );
 		void GenerateOriginalTriangleMap( void );
 		void ResetSortKeys( void );
 	};

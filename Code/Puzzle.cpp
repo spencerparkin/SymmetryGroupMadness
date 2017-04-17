@@ -15,6 +15,7 @@
 #include <wx/filedlg.h>
 #include <wx/xml/xml.h>
 #include <wx/filename.h>
+#include <rapidjson/writer.h>
 
 Puzzle::Puzzle( void )
 {
@@ -372,6 +373,24 @@ bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
 			xmlRootNode->AddAttribute( new wxXmlAttribute( "texture", texFile ) );
 		}
 
+		rapidjson::Document doc;
+		doc.SetObject();
+
+		rapidjson::Value permutationValue( rapidjson::kObjectType );
+		permutation.GetToJsonValue( permutationValue, doc.GetAllocator() );
+
+		doc.AddMember( "data", permutationValue, doc.GetAllocator() );
+
+		rapidjson::StringBuffer buffer;
+		rapidjson::Writer< rapidjson::StringBuffer > writer( buffer );
+		if( doc.Accept( writer ) )
+		{
+			wxString jsonString = buffer.GetString();
+			wxXmlNode* xmlPermutationNode = new wxXmlNode( xmlRootNode, wxXML_ELEMENT_NODE, "Permutation" );
+			wxXmlNode* xmlDataNode = new wxXmlNode( xmlPermutationNode, wxXML_CDATA_SECTION_NODE, "Data" );
+			xmlDataNode->SetContent( jsonString );
+		}
+
 		xmlRootNode->AddAttribute( new wxXmlAttribute( "level", wxString::Format( "%d", level ) ) );
 
 		if( !xmlDocument.Save( puzzleFile ) )
@@ -463,6 +482,33 @@ bool Puzzle::Load( wxString puzzleFile /*= wxEmptyString*/ )
 		if( !CreateShapes() )
 			break;
 
+		wxXmlNode* xmlPermNode = xmlRootNode->GetChildren();
+		while( xmlPermNode && xmlPermNode->GetName() != "Permutation" )
+			xmlPermNode = xmlPermNode->GetNext();
+
+		if( xmlPermNode )
+		{
+			wxXmlNode* xmlDataNode = xmlPermNode->GetChildren();
+			if( !xmlDataNode || xmlDataNode->GetType() != wxXML_CDATA_SECTION_NODE )
+				break;
+
+			wxString jsonString = xmlDataNode->GetContent();
+
+			rapidjson::Document doc;
+			doc.Parse( jsonString.c_str() );
+			if( !doc.IsObject() )
+				break;
+
+			if( !doc.HasMember( "data" ) )
+				break;
+
+			rapidjson::Value permutationValue;
+			permutationValue = doc[ "data" ];
+
+			if( !permutation.SetFromJsonValue( permutationValue ) )
+				break;
+		}
+
 		success = true;
 	}
 	while( false );
@@ -520,104 +566,6 @@ bool Puzzle::SetupLevel( int level )
 	return true;
 }
 
-bool Puzzle::CreateShapes( void )
-{
-	DeleteShapeList( shapeList );
-
-	switch( level )
-	{
-		case 1:
-		{
-			// Level 1 is just the dihedral group D_3.
-			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
-			shapeList.push_back( shape );
-
-			return true;
-		}
-		case 2:
-		{
-			// Level 2 is just the dihedral group D_4.
-			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
-			shapeList.push_back( shape );
-			
-			return true;
-		}
-		case 3:
-		{
-			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -4.0, 0.0, 0.0 ), 6.0, 3 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, 0.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
-			shapeList.push_back( shape );
-
-			return true;
-		}
-		case 4:
-		{
-			double a = 6.0 / sqrt( 2.0 );
-
-			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -a / 2.0, -a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a / 2.0, a / 2.0, 0.0 ), 6.0, 4, M_PI / 4.0 );
-			shapeList.push_back( shape );
-
-			return true;
-		}
-		case 5:
-		{
-			double r = 6.0;
-			double a = r / sqrt( 2.0 );
-
-			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, a - a / 3.0, a / 3.0, 0.0 ), r, 4, M_PI / 4.0 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -a + a / 3.0, -a / 3.0, 0.0 ), r, 4, M_PI / 4.0 );
-			shapeList.push_back( shape );
-
-			return true;
-		}
-		case 6:
-		{
-			Shape* shape = nullptr;
-
-			shape = new Shape();
-			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -5.0, 0.0 ), 12.0, 2.0, 0.0 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 5.0, 0.0 ), 12.0, 2.0, 0.0 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
-			shapeList.push_back( shape );
-
-			shape = new Shape();
-			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
-			shapeList.push_back( shape );
-
-			return true;
-		}
-		case MAX_LEVELS:
-		{
-			// The "winner" level has no shapes so that there's no way to advance further.
-			wxMessageBox( "Congratulations!  You've solved every level!  More levels will be added as new releases of this program are made.", "You win!", wxOK | wxCENTRE, wxGetApp().GetFrame() );
-			return true;
-		}
-	}
-	
-	return false;
-}
-
 // Note that we do nothing here to insure that the scramble actually scrambles the puzzle.
 // It would be unlikely that the scramble would only temporarily scramble the puzzle and then have it wind up in the solved state.
 void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
@@ -650,12 +598,15 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 			int cyclicSubgroupOrder = int( 2.0 * M_PI / scramble.shape->GetRotationDelta() );
 			scramble.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 			scramble.rotationAngle = double( random->Integer( 1, cyclicSubgroupOrder - 1 ) ) * scramble.shape->GetRotationDelta();
+			scramble.actionPerm = scramble.shape->ccwRotationPermutation;
 		}
 		else
 		{
 			int j = random->Integer( 0, scramble.shape->GetReflectionAxisArray().size() - 1 );
 			scramble.rotationAxis = scramble.shape->GetReflectionAxisArray()[j];
 			scramble.rotationAngle = M_PI;
+			if( j < scramble.shape->reflectionPermutationArray.size() )
+				scramble.actionPerm = scramble.shape->reflectionPermutationArray[j];
 		}		
 		
 		scrambleQueue.push_back( scramble );

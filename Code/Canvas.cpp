@@ -83,7 +83,7 @@ bool Canvas::AnimateScrambles( void )
 		if( grab )
 		{
 			grab->rotationAngle = scramble.rotationAngle;
-			grab->ApplyRotation();
+			grab->ApplyRotation( puzzle );
 			grab->ResetSortKeys();
 			delete grab;
 			grab = nullptr;
@@ -96,6 +96,7 @@ bool Canvas::AnimateScrambles( void )
 		if( !grab )
 		{
 			grab = new Grab();
+			grab->actionPerm = scramble.actionPerm;
 			grab->pivotPoint = scramble.shape->GetPivotPoint();
 			grab->shape = scramble.shape;
 			grab->rotationAxis = scramble.rotationAxis;
@@ -318,7 +319,7 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 		grab->rotationAngle -= rotationAngleRemainder;
 	}
 
-	grab->ApplyRotation();
+	grab->ApplyRotation( puzzle );
 	grab->ResetSortKeys();
 	delete grab;
 	grab = nullptr;
@@ -360,6 +361,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 
 	if( grab->type == Grab::REFLECTION )
 	{
+		Permutation bestActionPerm;
 		const c3ga::vectorE3GA* bestReflectionAxis = nullptr;
 		double smallestDot = 0.0;
 		const VectorArray& reflectionAxisArray = grab->shape->GetReflectionAxisArray();
@@ -370,6 +372,8 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 			if( dot < smallestDot || !bestReflectionAxis )
 			{
 				bestReflectionAxis = &reflectionAxis;
+				if( i < grab->shape->reflectionPermutationArray.size() )
+					bestActionPerm = grab->shape->reflectionPermutationArray[i];
 				smallestDot = dot;
 			}
 		}
@@ -378,6 +382,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 			return;
 
 		grab->rotationAxis = *bestReflectionAxis;
+		grab->actionPerm = bestActionPerm;
 
 		c3ga::vectorE3GA vector = grab->pivotPoint - grab->anchorPoint;
 		double ratio = c3ga::lc( c3ga::unit( vector ), dragVector * dragMagnitude ) / c3ga::norm( vector );
@@ -394,6 +399,8 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 		c3ga::bivectorE3GA bivector = anchorVector ^ mouseVector;
 		if( bivector.get_e1_e2() < 0.0 )
 			grab->rotationAngle = 2.0 * M_PI - grab->rotationAngle;
+
+		grab->actionPerm = grab->shape->ccwRotationPermutation;
 	}
 	else
 		return;
@@ -478,7 +485,7 @@ void Canvas::Grab::ResetSortKeys( void )
 	}
 }
 
-void Canvas::Grab::ApplyRotation( void )
+void Canvas::Grab::ApplyRotation( Puzzle* puzzle /*= nullptr*/ )
 {
 	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
 	{
@@ -494,6 +501,16 @@ void Canvas::Grab::ApplyRotation( void )
 
 		for( int i = 0; i < 3; i++ )
 			triangle->vertex[i].point = pivotPoint + c3ga::applyUnitVersor( rotor, originalTriangle->vertex[i].point - pivotPoint );
+	}
+
+	if( puzzle )
+	{
+		if( type == ROTATION )
+		{
+			//...power up action perm based on rotation angle...
+		}
+
+		puzzle->GetPermutation().MultiplyOnRight( actionPerm );
 	}
 }
 

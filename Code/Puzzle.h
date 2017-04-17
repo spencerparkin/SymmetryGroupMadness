@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Container.h"
+#include "Permutation.h"
 #include <wx/string.h>
 #include <wx/arrstr.h>
 
@@ -43,6 +44,7 @@ public:
 	int GetTriangleCount( void ) const { return ( int )triangleList->size(); }
 	const ShapeList& GetShapeList( void ) { return shapeList; }
 	const Rectangle_* GetRectangle( void ) const;
+	Permutation& GetPermutation( void ) { return permutation; }
 
 	enum { MAX_LEVELS = 7, MAX_IMAGES = 14 };
 
@@ -55,9 +57,10 @@ private:
 	void RecalculateAllUVs( void );
 	void TessellateTriangles( const LineSegment& lineSegment );
 	void CollectTrianglesInTriangle( const Triangle& triangleCover, TriangleList& collectedTriangleList );
-	bool CreateShapes( void );
+	bool CreateShapes( void );		// See CreateShapes.cpp.
 	void GetTextureFileArray( wxArrayString& texFileArray );
 
+	Permutation permutation;
 	TriangleList* triangleList;
 	ShapeList shapeList;
 	int level;
