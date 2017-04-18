@@ -334,6 +334,14 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	else
 		actionPerm = grab->shape->ccwRotationPermutation;
 
+	if( rotationCount < 0 )
+	{
+		Permutation invActionPerm;
+		actionPerm.GetInverse( invActionPerm );
+		actionPerm = invActionPerm;
+		rotationCount = -rotationCount;
+	}
+
 	for( int i = 0; i < rotationCount; i++ )
 		puzzle->GetPermutation().MultiplyOnRight( actionPerm );
 

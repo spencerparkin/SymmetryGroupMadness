@@ -574,6 +574,9 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 	if( scrambleSeed == 0 )
 		scrambleSeed = ( int )time( nullptr );
 
+	scrambleSeed = 0;
+	scrambleCount = 1;
+
 	srand( scrambleSeed );
 
 	autoRotationQueue.clear();
@@ -621,10 +624,16 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 
 bool Puzzle::EnqueueSolution( void )
 {
-	wxString stabChainFile;
+	wxBusyCursor busyCursor;
 
-	switch( this->level )
+	wxString stabChainFile;
+	switch( level )
 	{
+		case 4:
+		{
+			stabChainFile = "SymGrpMadPuzzleA.txt";
+			break;
+		}
 		case 5:
 		{
 			stabChainFile = "SymGrpMadPuzzleB.txt";
