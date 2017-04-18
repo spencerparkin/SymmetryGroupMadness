@@ -68,9 +68,12 @@ bool Canvas::AnimateAutoRotations( void )
 		return false;
 	}
 
+	double eps = 1e-3;
+
 	AutoRotationList::iterator iter = puzzle->autoRotationQueue.begin();
 	AutoRotation& autoRotation = *iter;
-	if( autoRotation.animationAngle >= autoRotation.rotationAngle )
+	double distance = fabs( autoRotation.animationAngle - autoRotation.rotationAngle );
+	if( distance < eps )
 	{
 		wxASSERT( grab );
 		if( grab )
@@ -100,7 +103,12 @@ bool Canvas::AnimateAutoRotations( void )
 
 		grab->rotationAngle = autoRotation.animationAngle;
 		double animationAngleDelta = animationRate / frameRate;		// Radians per frame.
+		if( autoRotation.rotationAngle < 0.0 )
+			animationAngleDelta *= -1.0;
 		autoRotation.animationAngle += animationAngleDelta;
+		double newDistance = fabs( autoRotation.animationAngle - autoRotation.rotationAngle );
+		if( newDistance > distance )
+			autoRotation.animationAngle = autoRotation.rotationAngle;
 
 		grab->ApplyRotation();
 	}
