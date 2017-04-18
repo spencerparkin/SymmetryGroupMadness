@@ -25,6 +25,7 @@ private:
 		ID_LoadGame,
 		ID_Exit,
 		ID_About,
+		ID_Solve,
 		ID_Timer,
 	};
 
@@ -33,6 +34,7 @@ private:
 	void OnLoadGame( wxCommandEvent& event );
 	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
+	void OnSolve( wxCommandEvent& event );
 	void OnUpdateMenuItemUI( wxUpdateUIEvent& event );
 	void OnTimer( wxTimerEvent& event );
 

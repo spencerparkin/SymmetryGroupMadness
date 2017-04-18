@@ -16,6 +16,7 @@
 #include <wx/xml/xml.h>
 #include <wx/filename.h>
 #include <rapidjson/writer.h>
+#include <StabilizerChain.h>
 
 Puzzle::Puzzle( void )
 {
@@ -575,7 +576,7 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 
 	srand( scrambleSeed );
 
-	scrambleQueue.clear();
+	autoRotationQueue.clear();
 
 	Random* random = wxGetApp().GetRandom();
 
@@ -585,9 +586,9 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 
 	for( int i = 0; i < scrambleCount; i++ )
 	{
-		Scramble scramble;
-		scramble.animationAngle = 0.0;
-		scramble.shape = *shapeIter;
+		AutoRotation autoRotation;
+		autoRotation.animationAngle = 0.0;
+		autoRotation.shape = *shapeIter;
 
 		shapeIter++;
 		if( shapeIter == shapeList.end() )
@@ -595,24 +596,155 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 
 		if( ( shapeList.size() != 2 && ( i % 2 == 0 ) ) || ( i % 4 > 2 ) )
 		{
-			int cyclicSubgroupOrder = int( 2.0 * M_PI / scramble.shape->GetRotationDelta() );
-			scramble.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
-			scramble.rotationAngle = double( random->Integer( 1, cyclicSubgroupOrder - 1 ) ) * scramble.shape->GetRotationDelta();
-			scramble.actionPerm = scramble.shape->ccwRotationPermutation;
+			int cyclicSubgroupOrder = int( 2.0 * M_PI / autoRotation.shape->GetRotationDelta() );
+			autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+			int rotationCount = random->Integer( 1, cyclicSubgroupOrder - 1 );
+			autoRotation.rotationAngle = double( rotationCount ) * autoRotation.shape->GetRotationDelta();
+			autoRotation.actionPerm = autoRotation.shape->ccwRotationPermutation;
+			for( int i = 0; i < rotationCount - 1; i++ )
+				autoRotation.actionPerm.MultiplyOnRight( autoRotation.shape->ccwRotationPermutation );
 		}
 		else
 		{
-			int j = random->Integer( 0, scramble.shape->GetReflectionAxisArray().size() - 1 );
-			scramble.rotationAxis = scramble.shape->GetReflectionAxisArray()[j];
-			scramble.rotationAngle = M_PI;
-			if( j < scramble.shape->reflectionPermutationArray.size() )
-				scramble.actionPerm = scramble.shape->reflectionPermutationArray[j];
+			int j = random->Integer( 0, autoRotation.shape->GetReflectionAxisArray().size() - 1 );
+			autoRotation.rotationAxis = autoRotation.shape->GetReflectionAxisArray()[j];
+			autoRotation.rotationAngle = M_PI;
+			if( j < autoRotation.shape->reflectionPermutationArray.size() )
+				autoRotation.actionPerm = autoRotation.shape->reflectionPermutationArray[j];
 		}		
 		
-		scrambleQueue.push_back( scramble );
+		autoRotationQueue.push_back( autoRotation );
 	}
 
 	wxGetApp().GetFrame()->timer.Start(1);
+}
+
+bool Puzzle::EnqueueSolution( void )
+{
+	wxString stabChainFile;
+
+	switch( this->level )
+	{
+		case 5:
+		{
+			stabChainFile = "SymGrpMadPuzzleB.txt";
+			break;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+
+	wxString stabChainFilePath = "StabChains/" + stabChainFile;
+	if( !wxFileExists( stabChainFilePath ) )
+	{
+		stabChainFilePath = wxString( wxGetenv( "SNAP" ) ) + "/share/SymmetryGroupMadness/StabChains/" + stabChainFile;
+		if( !wxFileExists( stabChainFile ) )
+			return false;
+	}
+
+	wxFile file( stabChainFilePath );
+	wxString jsonString;
+	if( !file.ReadAll( &jsonString ) )
+		return false;
+
+	wxScopedPtr< StabilizerChain > stabChain( new StabilizerChain() );
+	if( !stabChain->LoadFromJsonString( ( const char* )jsonString.c_str() ) )
+		return false;
+
+	CompressInfo compressInfo;
+	if( !stabChain->group->MakeCompressInfo( compressInfo ) )
+		return false;
+
+	PermutationSet trembleSet;
+	for( PermutationSet::iterator iter = stabChain->group->generatorSet.begin(); iter != stabChain->group->generatorSet.end(); iter++ )
+		trembleSet.insert( *iter );
+
+	Permutation invPermutation;
+	invPermutation.word = new ElementList;
+	if( !stabChain->group->FactorInverseWithTrembling( permutation, invPermutation, trembleSet, compressInfo ) )
+		return false;
+
+	if( !invPermutation.CompressWord( compressInfo ) )
+		return false;
+
+	// Sanity check: Did we actually find the inverse?
+	Permutation product;
+	product.Multiply( permutation, invPermutation );
+	if( !product.IsIdentity() )
+		return false;
+
+	autoRotationQueue.clear();
+
+	for( ElementList::const_iterator iter = invPermutation.word->cbegin(); iter != invPermutation.word->cend(); iter++ )
+	{
+		const Element& element = *iter;
+		
+		AutoRotation autoRotation;
+		autoRotation.animationAngle = 0.0;
+
+		PermutationMap::iterator permIter = compressInfo.permutationMap.find( element.name );
+		if( permIter == compressInfo.permutationMap.end() )
+			return false;
+
+		bool foundAutoRotation = false;
+		Permutation actionPerm;
+
+		for( ShapeList::iterator shapeIter = shapeList.begin(); shapeIter != shapeList.end() && !foundAutoRotation; shapeIter++ )
+		{
+			Shape* shape = *shapeIter;
+
+			if( shape->ccwRotationPermutation.IsEqualTo( permIter->second ) )
+			{
+				actionPerm = shape->ccwRotationPermutation;
+				autoRotation.shape = shape;
+				autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+				autoRotation.rotationAngle = shape->GetRotationDelta();
+				foundAutoRotation = true;
+			}
+			else
+			{
+				for( int i = 0; i < ( int )shape->reflectionPermutationArray.size(); i++ )
+				{
+					if( shape->reflectionPermutationArray[i].IsEqualTo( permIter->second ) )
+					{
+						actionPerm = shape->reflectionPermutationArray[i];
+						autoRotation.shape = shape;
+						autoRotation.rotationAxis = shape->GetReflectionAxisArray()[i];
+						autoRotation.rotationAngle = M_PI;
+						foundAutoRotation = true;
+						break;
+					}
+				}
+			}
+		}
+
+		if( !foundAutoRotation )
+			return false;
+
+		if( element.exponent < 0 )
+		{
+			Permutation invActionPerm;
+			actionPerm.GetInverse( invActionPerm );
+			actionPerm = invActionPerm;
+			autoRotation.rotationAngle *= -1.0;
+		}
+		
+		Permutation factor = actionPerm;
+		double rotationDelta = autoRotation.rotationAngle;
+		for( int i = 0; i < abs( element.exponent ) - 1; i++ )
+		{
+			actionPerm.MultiplyOnRight( factor );
+			autoRotation.rotationAngle += rotationDelta;
+		}
+
+		autoRotation.actionPerm = actionPerm;
+
+		autoRotationQueue.push_back( autoRotation );
+	}
+
+	return true;
 }
 
 // Puzzle.cpp

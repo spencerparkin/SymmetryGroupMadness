@@ -31,8 +31,6 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 #else
 	animationRate = M_PI;
 #endif
-	animationKey = 0;
-	renderKey = 0;
 
 	hitBuffer = nullptr;
 	hitBufferSize = 0;
@@ -61,68 +59,64 @@ void Canvas::BindContext( void )
 	SetCurrent( *context );
 }
 
-bool Canvas::AnimateScrambles( void )
+bool Canvas::AnimateAutoRotations( void )
 {
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
-	if( !puzzle || puzzle->scrambleQueue.size() == 0 )
+	if( !puzzle || puzzle->autoRotationQueue.size() == 0 )
 	{
 		lastFrameTime = 0.0;
 		return false;
 	}
-	
-	if( renderKey < animationKey )
-		return true;
 
-	animationKey++;
-
-	ScrambleList::iterator iter = puzzle->scrambleQueue.begin();
-	Scramble& scramble = *iter;
-	if( scramble.animationAngle >= scramble.rotationAngle )
+	AutoRotationList::iterator iter = puzzle->autoRotationQueue.begin();
+	AutoRotation& autoRotation = *iter;
+	if( autoRotation.animationAngle >= autoRotation.rotationAngle )
 	{
 		wxASSERT( grab );
 		if( grab )
 		{
-			grab->rotationAngle = scramble.rotationAngle;
-			grab->ApplyRotation( puzzle );
+			puzzle->GetPermutation().MultiplyOnRight( autoRotation.actionPerm );
+			grab->rotationAngle = autoRotation.rotationAngle;
+			grab->ApplyRotation();
 			grab->ResetSortKeys();
 			delete grab;
 			grab = nullptr;
 		}
 
-		puzzle->scrambleQueue.erase( iter );
+		puzzle->autoRotationQueue.erase( iter );
 	}
 	else
 	{
 		if( !grab )
 		{
 			grab = new Grab();
-			grab->actionPerm = scramble.actionPerm;
-			grab->pivotPoint = scramble.shape->GetPivotPoint();
-			grab->shape = scramble.shape;
-			grab->rotationAxis = scramble.rotationAxis;
+			grab->pivotPoint = autoRotation.shape->GetPivotPoint();
+			grab->shape = autoRotation.shape;
+			grab->rotationAxis = autoRotation.rotationAxis;
 			puzzle->GrabShape( *grab->shape, grab->grabbedTriangleList );
 			grab->GenerateOriginalTriangleMap();
 			puzzle->SortForRender();
 		}
 
-		grab->rotationAngle = scramble.animationAngle;
+		grab->rotationAngle = autoRotation.animationAngle;
 		double animationAngleDelta = animationRate / frameRate;		// Radians per frame.
-		scramble.animationAngle += animationAngleDelta;
+		autoRotation.animationAngle += animationAngleDelta;
 
 		grab->ApplyRotation();
 	}
 
-	Refresh();
 	return true;
 }
 
 void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/, bool pickShapes /*= true*/ )
 {
+	( void )AnimateAutoRotations();
+
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 
 	BindContext();
 
-	if( puzzle && puzzle->scrambleQueue.size() > 0 && renderMode == GL_RENDER )
+	if( puzzle && puzzle->autoRotationQueue.size() > 0 && renderMode == GL_RENDER )
 	{
 		double currentFrameTime = double( clock() ) / double( CLOCKS_PER_SEC );
 		if( lastFrameTime != 0.0 )
@@ -132,8 +126,6 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 		}
 
 		lastFrameTime = currentFrameTime;
-
-		renderKey = animationKey;
 	}
 
 	glClearColor( 0.f, 0.f, 0.f, 1.f );
@@ -250,7 +242,7 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 	if( !puzzle )
 		return;
 
-	if( puzzle->scrambleQueue.size() > 0 )
+	if( puzzle->autoRotationQueue.size() > 0 )
 		return;
 
 	if( readyToAdvanceToNextLevel )
@@ -308,18 +300,36 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 		return;
 
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
-	if( puzzle && puzzle->scrambleQueue.size() > 0 )
+	if( puzzle && puzzle->autoRotationQueue.size() > 0 )
 		return;
 
+	int rotationCount = 0;
 	if( !commitRotation )
 		grab->rotationAngle = 0.0;
 	else
 	{
 		double rotationAngleRemainder = remainder( grab->rotationAngle, grab->rotationAngleMultiple );
 		grab->rotationAngle -= rotationAngleRemainder;
+		rotationCount = int( grab->rotationAngle / grab->rotationAngleMultiple );
 	}
 
-	grab->ApplyRotation( puzzle );
+	Permutation actionPerm;
+	if( grab->type == Grab::REFLECTION )
+	{
+		int i;
+		for( i = 0; i < ( int )grab->shape->reflectionPermutationArray.size(); i++ )
+			if( c3ga::norm( grab->shape->GetReflectionAxisArray()[i] - grab->rotationAxis ) < 0.01 )
+				break;
+		if( i < ( int )grab->shape->reflectionPermutationArray.size() )
+			actionPerm = grab->shape->reflectionPermutationArray[i];
+	}
+	else
+		actionPerm = grab->shape->ccwRotationPermutation;
+
+	for( int i = 0; i < rotationCount; i++ )
+		puzzle->GetPermutation().MultiplyOnRight( actionPerm );
+
+	grab->ApplyRotation();
 	grab->ResetSortKeys();
 	delete grab;
 	grab = nullptr;
@@ -348,7 +358,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 		return;
 
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
-	if( !puzzle || puzzle->scrambleQueue.size() > 0 )
+	if( !puzzle || puzzle->autoRotationQueue.size() > 0 )
 		return;
 
 	c3ga::vectorE3GA mouseLocation;
@@ -361,7 +371,6 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 
 	if( grab->type == Grab::REFLECTION )
 	{
-		Permutation bestActionPerm;
 		const c3ga::vectorE3GA* bestReflectionAxis = nullptr;
 		double smallestDot = 0.0;
 		const VectorArray& reflectionAxisArray = grab->shape->GetReflectionAxisArray();
@@ -372,8 +381,6 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 			if( dot < smallestDot || !bestReflectionAxis )
 			{
 				bestReflectionAxis = &reflectionAxis;
-				if( i < grab->shape->reflectionPermutationArray.size() )
-					bestActionPerm = grab->shape->reflectionPermutationArray[i];
 				smallestDot = dot;
 			}
 		}
@@ -382,7 +389,6 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 			return;
 
 		grab->rotationAxis = *bestReflectionAxis;
-		grab->actionPerm = bestActionPerm;
 
 		c3ga::vectorE3GA vector = grab->pivotPoint - grab->anchorPoint;
 		double ratio = c3ga::lc( c3ga::unit( vector ), dragVector * dragMagnitude ) / c3ga::norm( vector );
@@ -399,8 +405,6 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 		c3ga::bivectorE3GA bivector = anchorVector ^ mouseVector;
 		if( bivector.get_e1_e2() < 0.0 )
 			grab->rotationAngle = 2.0 * M_PI - grab->rotationAngle;
-
-		grab->actionPerm = grab->shape->ccwRotationPermutation;
 	}
 	else
 		return;
@@ -485,7 +489,7 @@ void Canvas::Grab::ResetSortKeys( void )
 	}
 }
 
-void Canvas::Grab::ApplyRotation( Puzzle* puzzle /*= nullptr*/ )
+void Canvas::Grab::ApplyRotation( void )
 {
 	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
 	{
@@ -501,16 +505,6 @@ void Canvas::Grab::ApplyRotation( Puzzle* puzzle /*= nullptr*/ )
 
 		for( int i = 0; i < 3; i++ )
 			triangle->vertex[i].point = pivotPoint + c3ga::applyUnitVersor( rotor, originalTriangle->vertex[i].point - pivotPoint );
-	}
-
-	if( puzzle )
-	{
-		if( type == ROTATION )
-		{
-			//...power up action perm based on rotation angle...
-		}
-
-		puzzle->GetPermutation().MultiplyOnRight( actionPerm );
 	}
 }
 

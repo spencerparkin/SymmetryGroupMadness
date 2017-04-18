@@ -17,7 +17,7 @@ public:
 	Canvas( wxWindow* parent );
 	virtual ~Canvas( void );
 
-	bool AnimateScrambles( void );
+	bool AnimateAutoRotations( void );
 
 private:
 
@@ -55,9 +55,8 @@ private:
 		const Shape* shape;
 		enum Type { ROTATION, REFLECTION };
 		Type type;
-		Permutation actionPerm;
 
-		void ApplyRotation( Puzzle* puzzle = nullptr );
+		void ApplyRotation( void );
 		void GenerateOriginalTriangleMap( void );
 		void ResetSortKeys( void );
 	};
@@ -73,8 +72,6 @@ private:
 	double frameRate;			// Frames per second.
 	double lastFrameTime;		// Seconds.
 	double animationRate;		// Radians per second.
-	int animationKey;
-	int renderKey;
 };
 
 // Canvas.h

@@ -48,7 +48,9 @@ public:
 
 	enum { MAX_LEVELS = 7, MAX_IMAGES = 14 };
 
-	ScrambleList scrambleQueue;
+	AutoRotationList autoRotationQueue;
+
+	bool EnqueueSolution( void );
 
 private:
 

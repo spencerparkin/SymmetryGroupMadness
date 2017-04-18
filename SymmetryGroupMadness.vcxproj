@@ -167,7 +167,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../wxWidgets-3.0.2/lib/vc_x64_lib;../../wxWidgets-3.0.2/lib/vc_x64_lib;../PermutationGroup/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../wxWidgets-3.0.2/lib/vc_x64_lib;../../wxWidgets-3.0.2/lib/vc_x64_lib;../PermutationGroup/x64/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib;PermutationGroup.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
