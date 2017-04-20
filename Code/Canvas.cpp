@@ -78,7 +78,6 @@ bool Canvas::AnimateAutoRotations( void )
 		wxASSERT( grab );
 		if( grab )
 		{
-			puzzle->GetPermutation().MultiplyOnRight( autoRotation.actionPerm );
 			grab->rotationAngle = autoRotation.rotationAngle;
 			grab->ApplyRotation();
 			grab->ResetSortKeys();
@@ -96,6 +95,7 @@ bool Canvas::AnimateAutoRotations( void )
 			grab->pivotPoint = autoRotation.shape->GetPivotPoint();
 			grab->shape = autoRotation.shape;
 			grab->rotationAxis = autoRotation.rotationAxis;
+			grab->rotationAngleMultiple = 0.0;
 			puzzle->GrabShape( *grab->shape, grab->grabbedTriangleList );
 			grab->GenerateOriginalTriangleMap();
 			puzzle->SortForRender();
@@ -110,7 +110,7 @@ bool Canvas::AnimateAutoRotations( void )
 		if( newDistance > distance )
 			autoRotation.animationAngle = autoRotation.rotationAngle;
 
-		grab->ApplyRotation();
+		grab->ApplyRotation( false );
 	}
 
 	return true;
@@ -311,39 +311,13 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 	if( puzzle && puzzle->autoRotationQueue.size() > 0 )
 		return;
 
-	int rotationCount = 0;
 	if( !commitRotation )
 		grab->rotationAngle = 0.0;
 	else
 	{
 		double rotationAngleRemainder = remainder( grab->rotationAngle, grab->rotationAngleMultiple );
 		grab->rotationAngle -= rotationAngleRemainder;
-		rotationCount = int( grab->rotationAngle / grab->rotationAngleMultiple );
 	}
-
-	Permutation actionPerm;
-	if( grab->type == Grab::REFLECTION )
-	{
-		int i;
-		for( i = 0; i < ( int )grab->shape->reflectionPermutationArray.size(); i++ )
-			if( c3ga::norm( grab->shape->GetReflectionAxisArray()[i] - grab->rotationAxis ) < 0.01 )
-				break;
-		if( i < ( int )grab->shape->reflectionPermutationArray.size() )
-			actionPerm = grab->shape->reflectionPermutationArray[i];
-	}
-	else
-		actionPerm = grab->shape->ccwRotationPermutation;
-
-	if( rotationCount < 0 )
-	{
-		Permutation invActionPerm;
-		actionPerm.GetInverse( invActionPerm );
-		actionPerm = invActionPerm;
-		rotationCount = -rotationCount;
-	}
-
-	for( int i = 0; i < rotationCount; i++ )
-		puzzle->GetPermutation().MultiplyOnRight( actionPerm );
 
 	grab->ApplyRotation();
 	grab->ResetSortKeys();
@@ -505,7 +479,7 @@ void Canvas::Grab::ResetSortKeys( void )
 	}
 }
 
-void Canvas::Grab::ApplyRotation( void )
+void Canvas::Grab::ApplyRotation( bool changePermutation /*= true*/ )
 {
 	for( TriangleList::iterator iter = grabbedTriangleList.begin(); iter != grabbedTriangleList.end(); iter++ )
 	{
@@ -521,6 +495,39 @@ void Canvas::Grab::ApplyRotation( void )
 
 		for( int i = 0; i < 3; i++ )
 			triangle->vertex[i].point = pivotPoint + c3ga::applyUnitVersor( rotor, originalTriangle->vertex[i].point - pivotPoint );
+	}
+
+	if( changePermutation )
+	{
+		Puzzle* puzzle = wxGetApp().GetPuzzle();
+		rotationAngleMultiple = M_PI;
+		if( type == Grab::ROTATION )
+			rotationAngleMultiple = shape->GetRotationDelta();
+		int rotationCount = int( rotationAngle / rotationAngleMultiple );
+
+		Permutation actionPerm;
+		if( type == Grab::REFLECTION )
+		{
+			int i;
+			for( i = 0; i < ( int )shape->reflectionPermutationArray.size(); i++ )
+				if( c3ga::norm( shape->GetReflectionAxisArray()[ i ] - rotationAxis ) < 0.01 )
+					break;
+			if( i < ( int )shape->reflectionPermutationArray.size() )
+				actionPerm = shape->reflectionPermutationArray[ i ];
+		}
+		else
+			actionPerm = shape->ccwRotationPermutation;
+
+		if( rotationCount < 0 )
+		{
+			Permutation invActionPerm;
+			actionPerm.GetInverse( invActionPerm );
+			actionPerm = invActionPerm;
+			rotationCount = -rotationCount;
+		}
+
+		for( int i = 0; i < rotationCount; i++ )
+			puzzle->GetPermutation().MultiplyOnRight( actionPerm );
 	}
 }
 

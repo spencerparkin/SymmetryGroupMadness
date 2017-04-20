@@ -114,7 +114,7 @@ void Frame::OnNewGame( wxCommandEvent& event )
 	if( wxGetApp().SetPuzzle( nullptr ) )
 	{
 		Puzzle* puzzle = new Puzzle();
-		puzzle->SetupLevel(1);
+		puzzle->SetupLevel(4);
 		wxGetApp().SetPuzzle( puzzle );
 		canvas->Refresh();
 	}
@@ -162,7 +162,7 @@ void Frame::OnUpdateMenuItemUI( wxUpdateUIEvent& event )
 		case ID_Solve:
 		{
 			Puzzle* puzzle = wxGetApp().GetPuzzle();
-			event.Enable( !puzzle->GetPermutation().IsIdentity() );
+			event.Enable( puzzle && !puzzle->GetPermutation().IsIdentity() );
 			break;
 		}
 	}

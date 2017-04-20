@@ -600,17 +600,12 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 			autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 			int rotationCount = random->Integer( 1, cyclicSubgroupOrder - 1 );
 			autoRotation.rotationAngle = double( rotationCount ) * autoRotation.shape->GetRotationDelta();
-			autoRotation.actionPerm = autoRotation.shape->ccwRotationPermutation;
-			for( int i = 0; i < rotationCount - 1; i++ )
-				autoRotation.actionPerm.MultiplyOnRight( autoRotation.shape->ccwRotationPermutation );
 		}
 		else
 		{
 			int j = random->Integer( 0, autoRotation.shape->GetReflectionAxisArray().size() - 1 );
 			autoRotation.rotationAxis = autoRotation.shape->GetReflectionAxisArray()[j];
 			autoRotation.rotationAngle = M_PI;
-			if( j < autoRotation.shape->reflectionPermutationArray.size() )
-				autoRotation.actionPerm = autoRotation.shape->reflectionPermutationArray[j];
 		}		
 		
 		autoRotationQueue.push_back( autoRotation );
@@ -695,7 +690,6 @@ bool Puzzle::EnqueueSolution( void )
 			return false;
 
 		bool foundAutoRotation = false;
-		Permutation actionPerm;
 
 		for( ShapeList::iterator shapeIter = shapeList.begin(); shapeIter != shapeList.end() && !foundAutoRotation; shapeIter++ )
 		{
@@ -703,7 +697,6 @@ bool Puzzle::EnqueueSolution( void )
 
 			if( shape->ccwRotationPermutation.IsEqualTo( permIter->second ) )
 			{
-				actionPerm = shape->ccwRotationPermutation;
 				autoRotation.shape = shape;
 				autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 				autoRotation.rotationAngle = shape->GetRotationDelta();
@@ -715,7 +708,6 @@ bool Puzzle::EnqueueSolution( void )
 				{
 					if( shape->reflectionPermutationArray[i].IsEqualTo( permIter->second ) )
 					{
-						actionPerm = shape->reflectionPermutationArray[i];
 						autoRotation.shape = shape;
 						autoRotation.rotationAxis = shape->GetReflectionAxisArray()[i];
 						autoRotation.rotationAngle = M_PI;
@@ -730,22 +722,11 @@ bool Puzzle::EnqueueSolution( void )
 			return false;
 
 		if( element.exponent < 0 )
-		{
-			Permutation invActionPerm;
-			actionPerm.GetInverse( invActionPerm );
-			actionPerm = invActionPerm;
 			autoRotation.rotationAngle *= -1.0;
-		}
 		
-		Permutation factor = actionPerm;
 		double rotationDelta = autoRotation.rotationAngle;
 		for( int i = 0; i < abs( element.exponent ) - 1; i++ )
-		{
-			actionPerm.MultiplyOnRight( factor );
 			autoRotation.rotationAngle += rotationDelta;
-		}
-
-		autoRotation.actionPerm = actionPerm;
 
 		autoRotationQueue.push_back( autoRotation );
 	}

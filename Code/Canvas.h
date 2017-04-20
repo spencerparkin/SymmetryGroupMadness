@@ -56,7 +56,7 @@ private:
 		enum Type { ROTATION, REFLECTION };
 		Type type;
 
-		void ApplyRotation( void );
+		void ApplyRotation( bool changePermutation = true );
 		void GenerateOriginalTriangleMap( void );
 		void ResetSortKeys( void );
 	};

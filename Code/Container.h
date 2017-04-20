@@ -24,7 +24,6 @@ struct AutoRotation
 	double rotationAngle;
 	double animationAngle;
 	Shape* shape;
-	Permutation actionPerm;
 };
 
 typedef std::list< LineSegment* > LineSegmentList;
