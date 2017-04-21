@@ -50,3 +50,6 @@ Snap/parts/
 Snap/prime/
 Snap/stage/
 *.snap
+
+# PyCharm crap...
+.idea/
