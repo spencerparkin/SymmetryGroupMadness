@@ -92,6 +92,7 @@ bool Canvas::AnimateAutoRotations( void )
 		if( !grab )
 		{
 			grab = new Grab();
+			grab->type = autoRotation.reflection ? Grab::REFLECTION : Grab::ROTATION;
 			grab->pivotPoint = autoRotation.shape->GetPivotPoint();
 			grab->shape = autoRotation.shape;
 			grab->rotationAxis = autoRotation.rotationAxis;
@@ -399,7 +400,7 @@ void Canvas::ManageGrab( const wxPoint& mousePoint )
 	else
 		return;
 
-	grab->ApplyRotation();
+	grab->ApplyRotation( false );
 	Refresh();
 }
 

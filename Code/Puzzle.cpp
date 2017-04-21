@@ -602,12 +602,14 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 			autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 			int rotationCount = random->Integer( 1, cyclicSubgroupOrder - 1 );
 			autoRotation.rotationAngle = double( rotationCount ) * autoRotation.shape->GetRotationDelta();
+			autoRotation.reflection = false;
 		}
 		else
 		{
 			int j = random->Integer( 0, autoRotation.shape->GetReflectionAxisArray().size() - 1 );
 			autoRotation.rotationAxis = autoRotation.shape->GetReflectionAxisArray()[j];
 			autoRotation.rotationAngle = M_PI;
+			autoRotation.reflection = true;
 		}		
 		
 		autoRotationQueue.push_back( autoRotation );
@@ -620,25 +622,8 @@ bool Puzzle::EnqueueSolution( void )
 {
 	wxBusyCursor busyCursor;
 
-	wxString stabChainFile;
-	switch( level )
-	{
-		case 4:
-		{
-			stabChainFile = "SymGrpMadPuzzleA.txt";
-			break;
-		}
-		case 5:
-		{
-			stabChainFile = "SymGrpMadPuzzleB.txt";
-			break;
-		}
-		default:
-		{
-			return false;
-		}
-	}
-
+	wxString stabChainFile = wxString::Format( "SymGrpMadPuzzle%d.txt", level );
+	
 	wxString stabChainFilePath = "StabChains/" + stabChainFile;
 	if( !wxFileExists( stabChainFilePath ) )
 	{
@@ -702,6 +687,7 @@ bool Puzzle::EnqueueSolution( void )
 				autoRotation.shape = shape;
 				autoRotation.rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
 				autoRotation.rotationAngle = shape->GetRotationDelta();
+				autoRotation.reflection = false;
 				foundAutoRotation = true;
 			}
 			else
@@ -713,6 +699,7 @@ bool Puzzle::EnqueueSolution( void )
 						autoRotation.shape = shape;
 						autoRotation.rotationAxis = shape->GetReflectionAxisArray()[i];
 						autoRotation.rotationAngle = M_PI;
+						autoRotation.reflection = true;
 						foundAutoRotation = true;
 						break;
 					}

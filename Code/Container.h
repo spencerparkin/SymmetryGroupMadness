@@ -24,6 +24,7 @@ struct AutoRotation
 	double rotationAngle;
 	double animationAngle;
 	Shape* shape;
+	bool reflection;
 };
 
 typedef std::list< LineSegment* > LineSegmentList;
