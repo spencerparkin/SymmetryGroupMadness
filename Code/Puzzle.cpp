@@ -571,6 +571,8 @@ bool Puzzle::SetupLevel( int level )
 // It would be unlikely that the scramble would only temporarily scramble the puzzle and then have it wind up in the solved state.
 void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 {
+	return;
+
 	if( scrambleSeed == 0 )
 		scrambleSeed = ( int )time( nullptr );
 
