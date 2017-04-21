@@ -61,13 +61,13 @@ def RotateCCW( i, j ):
 PrintGenerator( 0, 4, 'permR0', RotateCCW )
 PrintGenerator( 0, 4, 'permD0p', ReflectOtherDiagonal )
 PrintGenerator( 0, 4, 'permV0', ReflectVertical )
-PrintGenerator( 0, 4, 'PermD0', ReflectDiagonal )
-PrintGenerator( 0, 4, 'PermH0', ReflectHorizontal )
+PrintGenerator( 0, 4, 'permD0', ReflectDiagonal )
+PrintGenerator( 0, 4, 'permH0', ReflectHorizontal )
 
 PrintGenerator( 2, 0, 'permR1', RotateCCW )
 PrintGenerator( 2, 0, 'permD1p', ReflectOtherDiagonal )
 PrintGenerator( 2, 0, 'permV1', ReflectVertical )
-PrintGenerator( 2, 0, 'PermD1', ReflectDiagonal )
-PrintGenerator( 2, 0, 'PermH1', ReflectHorizontal )
+PrintGenerator( 2, 0, 'permD1', ReflectDiagonal )
+PrintGenerator( 2, 0, 'permH1', ReflectHorizontal )
                 
 # Puzzle5Generators.py
