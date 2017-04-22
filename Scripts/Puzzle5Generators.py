@@ -45,7 +45,7 @@ def ReflectDiagonal( i, j ):
     return j, i
 
 def ReflectOtherDiagonal( i, j ):
-    return 5 - i, 5 - j
+    return 5 - j, 5 - i
 
 def ReflectVertical( i, j ):
     return i, 5 - j
