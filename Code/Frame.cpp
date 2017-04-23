@@ -9,6 +9,11 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
+// BUG: The "percent solved" thing as not only a bit dumb, but, due probably to round-off error,
+//      it is also not always accurate enough to detect when the puzzle is actually solved.  If every
+//      puzzle had its permutation group encoded, then we could use that as a possibly fool-proof way
+//      to know when the puzzle is in the solved state.
+
 Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" ), timer( this, ID_Timer )
 {
 	wxMenu* gameMenu = new wxMenu();
