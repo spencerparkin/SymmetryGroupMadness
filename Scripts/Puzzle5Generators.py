@@ -30,7 +30,6 @@ for i in range( rows ):
 def PrintGenerator( row, col, label, transform ):
     print( '' )
     print( 'Permutation %s;' % label )
-    print( '%s.DefineIdentity();' % label )
     for i in range(6):
         for j in range(6):
             entry = matrix[ row + i ][ col + j ]
@@ -40,6 +39,7 @@ def PrintGenerator( row, col, label, transform ):
             other_number = other_entry[ 'number' ]
             if number != other_number:
                 print( '%s.Define( %d, %d );' % ( label, number, other_number ) )
+    print( 'generatorSet.insert( %s );' % label )
 
 def ReflectDiagonal( i, j ):
     return j, i
