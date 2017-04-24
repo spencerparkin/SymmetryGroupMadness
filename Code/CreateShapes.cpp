@@ -34,13 +34,85 @@ bool Puzzle::CreateShapes( void )
 		}
 		case 3:
 		{
+			Permutation shapePermutation;
+
 			Shape* shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -4.0, 0.0, 0.0 ), 6.0, 3 );
 			shapeList.push_back( shape );
 
+			// aR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 4, 16 );
+			shapePermutation.DefineCycle( 1, 5, 17 );
+			shapePermutation.DefineCycle( 2, 6, 18 );
+			shapePermutation.DefineCycle( 3, 7, 19 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// aF0
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 17, 19 );
+			shapePermutation.DefineCycle( 3, 5 );
+			shapePermutation.DefineCycle( 2, 6 );
+			shapePermutation.DefineCycle( 0, 4 );
+			shapePermutation.DefineCycle( 1, 7 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// aF1
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 1, 3 );
+			shapePermutation.DefineCycle( 7, 17 );
+			shapePermutation.DefineCycle( 6, 18 );
+			shapePermutation.DefineCycle( 4, 16 );
+			shapePermutation.DefineCycle( 5, 19 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// aF2
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 5, 7 );
+			shapePermutation.DefineCycle( 1, 19 );
+			shapePermutation.DefineCycle( 2, 18 );
+			shapePermutation.DefineCycle( 0, 16 );
+			shapePermutation.DefineCycle( 3, 17 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
 			shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 4.0, 0.0, 0.0 ), 6.0, 3, M_PI / 3.0 );
 			shapeList.push_back( shape );
+
+			// bR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 8, 12, 18 );
+			shapePermutation.DefineCycle( 9, 13, 19 );
+			shapePermutation.DefineCycle( 11, 15, 17 );
+			shapePermutation.DefineCycle( 10, 14, 16 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// bF0
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 13, 15 );
+			shapePermutation.DefineCycle( 9, 17 );
+			shapePermutation.DefineCycle( 10, 16 );
+			shapePermutation.DefineCycle( 8, 18 );
+			shapePermutation.DefineCycle( 11, 19 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// bF1
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 17, 19 );
+			shapePermutation.DefineCycle( 10, 14 );
+			shapePermutation.DefineCycle( 11, 13 );
+			shapePermutation.DefineCycle( 8, 12 );
+			shapePermutation.DefineCycle( 9, 15 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// bF2
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 9, 11 );
+			shapePermutation.DefineCycle( 19, 15 );
+			shapePermutation.DefineCycle( 14, 16 );
+			shapePermutation.DefineCycle( 12, 18 );
+			shapePermutation.DefineCycle( 13, 17 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			return true;
 		}
@@ -549,23 +621,121 @@ bool Puzzle::CreateShapes( void )
 		}
 		case 6:
 		{
+			Permutation shapePermutation;
+
 			Shape* shape = nullptr;
 
 			shape = new Shape();
 			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -5.0, 0.0 ), 12.0, 2.0, 0.0 );
 			shapeList.push_back( shape );
 
+			// aR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 14 );
+			shapePermutation.DefineCycle( 1, 15 );
+			shapePermutation.DefineCycle( 2, 12 );
+			shapePermutation.DefineCycle( 3, 13 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// aFh
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 3 );
+			shapePermutation.DefineCycle( 1, 2 );
+			shapePermutation.DefineCycle( 12, 15 );
+			shapePermutation.DefineCycle( 13, 14 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// aFv
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 13 );
+			shapePermutation.DefineCycle( 1, 12 );
+			shapePermutation.DefineCycle( 3, 14 );
+			shapePermutation.DefineCycle( 2, 15 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
 			shape = new Shape();
 			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 5.0, 0.0 ), 12.0, 2.0, 0.0 );
 			shapeList.push_back( shape );
+
+			// cR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 5, 11 );
+			shapePermutation.DefineCycle( 6, 8 );
+			shapePermutation.DefineCycle( 4, 10 );
+			shapePermutation.DefineCycle( 7, 9 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// cFh
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 4, 7 );
+			shapePermutation.DefineCycle( 5, 6 );
+			shapePermutation.DefineCycle( 9, 10 );
+			shapePermutation.DefineCycle( 8, 11 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// cFv
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 4, 9 );
+			shapePermutation.DefineCycle( 5, 8 );
+			shapePermutation.DefineCycle( 6, 11 );
+			shapePermutation.DefineCycle( 7, 10 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			shape = new Shape();
 			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, -5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
 			shapeList.push_back( shape );
 
+			// dR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 12, 10 );
+			shapePermutation.DefineCycle( 13, 11 );
+			shapePermutation.DefineCycle( 15, 9 );
+			shapePermutation.DefineCycle( 8, 14 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// dRv
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 12, 13 );
+			shapePermutation.DefineCycle( 14, 15 );
+			shapePermutation.DefineCycle( 8, 9 );
+			shapePermutation.DefineCycle( 11, 10 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// dRh
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 12, 11 );
+			shapePermutation.DefineCycle( 8, 15 );
+			shapePermutation.DefineCycle( 9, 14 );
+			shapePermutation.DefineCycle( 10, 13 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
 			shape = new Shape();
 			shape->MakeRectangle( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 5.0, 0.0, 0.0 ), 12.0, 2.0, M_PI / 2.0 );
 			shapeList.push_back( shape );
+
+			// bR
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 6 );
+			shapePermutation.DefineCycle( 1, 7 );
+			shapePermutation.DefineCycle( 2, 4 );
+			shapePermutation.DefineCycle( 3, 5 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// bFv
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1 );
+			shapePermutation.DefineCycle( 2, 3 );
+			shapePermutation.DefineCycle( 4, 5 );
+			shapePermutation.DefineCycle( 6, 7 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// bFh
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 7 );
+			shapePermutation.DefineCycle( 3, 4 );
+			shapePermutation.DefineCycle( 1, 6 );
+			shapePermutation.DefineCycle( 2, 5 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			return true;
 		}
