@@ -574,6 +574,8 @@ void Puzzle::EnqueueScrambles( int scrambleCount, int scrambleSeed )
 	if( scrambleSeed == 0 )
 		scrambleSeed = ( int )time( nullptr );
 
+	return;
+
 	srand( scrambleSeed );
 
 	autoRotationQueue.clear();
