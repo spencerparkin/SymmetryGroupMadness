@@ -16,19 +16,70 @@ bool Puzzle::CreateShapes( void )
 	{
 		case 1:
 		{
+			Permutation shapePermutation;
+
 			// Level 1 is just the dihedral group D_3.
 			Shape* shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, -M_PI / 6.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, -2.0, 0.0 ), 8.0, 3, 3.0 * M_PI / 6.0 );
 			shapeList.push_back( shape );
+
+			// R
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1, 2 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// F0
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// F1
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 1, 2 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// F2
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 2 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			return true;
 		}
 		case 2:
 		{
+			Permutation shapePermutation;
+
 			// Level 2 is just the dihedral group D_4.
 			Shape* shape = new Shape();
 			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 0.0 ), 8.0, 4, M_PI / 4.0 );
 			shapeList.push_back( shape );
+
+			// R
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1, 2, 3 );
+			shape->ccwRotationPermutation = shapePermutation;
+
+			// Dp
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 1, 3 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// V
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1 );
+			shapePermutation.DefineCycle( 2, 3 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// D
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 2 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
+
+			// H
+			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 3 );
+			shapePermutation.DefineCycle( 1, 2 );
+			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			return true;
 		}
