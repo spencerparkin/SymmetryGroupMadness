@@ -631,26 +631,32 @@ bool Puzzle::CreateShapes( void )
 
 			// aR
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 14 );
-			shapePermutation.DefineCycle( 1, 15 );
-			shapePermutation.DefineCycle( 2, 12 );
-			shapePermutation.DefineCycle( 3, 13 );
+			shapePermutation.DefineCycle( 25, 26 );
+			shapePermutation.DefineCycle( 20, 31 );
+			shapePermutation.DefineCycle( 24, 27 );
+			shapePermutation.DefineCycle( 21, 30 );
+			shapePermutation.DefineCycle( 22, 29 );
+			shapePermutation.DefineCycle( 23, 28 );
 			shape->ccwRotationPermutation = shapePermutation;
 
-			// aFh
+			// aH
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 3 );
-			shapePermutation.DefineCycle( 1, 2 );
-			shapePermutation.DefineCycle( 12, 15 );
-			shapePermutation.DefineCycle( 13, 14 );
+			shapePermutation.DefineCycle( 20, 26 );
+			shapePermutation.DefineCycle( 21, 27 );
+			shapePermutation.DefineCycle( 22, 28 );
+			shapePermutation.DefineCycle( 23, 29 );
+			shapePermutation.DefineCycle( 24, 30 );
+			shapePermutation.DefineCycle( 25, 31 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
-			// aFv
+			// aV
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 13 );
-			shapePermutation.DefineCycle( 1, 12 );
-			shapePermutation.DefineCycle( 3, 14 );
-			shapePermutation.DefineCycle( 2, 15 );
+			shapePermutation.DefineCycle( 20, 25 );
+			shapePermutation.DefineCycle( 21, 24 );
+			shapePermutation.DefineCycle( 22, 23 );
+			shapePermutation.DefineCycle( 26, 31 );
+			shapePermutation.DefineCycle( 27, 30 );
+			shapePermutation.DefineCycle( 28, 29 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			shape = new Shape();
@@ -659,26 +665,32 @@ bool Puzzle::CreateShapes( void )
 
 			// cR
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 5, 11 );
-			shapePermutation.DefineCycle( 6, 8 );
-			shapePermutation.DefineCycle( 4, 10 );
-			shapePermutation.DefineCycle( 7, 9 );
+			shapePermutation.DefineCycle( 0, 11 );
+			shapePermutation.DefineCycle( 6, 5 );
+			shapePermutation.DefineCycle( 1, 10 );
+			shapePermutation.DefineCycle( 4, 7 );
+			shapePermutation.DefineCycle( 2, 9 );
+			shapePermutation.DefineCycle( 3, 8 );
 			shape->ccwRotationPermutation = shapePermutation;
 
-			// cFh
+			// cH
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 4, 7 );
-			shapePermutation.DefineCycle( 5, 6 );
-			shapePermutation.DefineCycle( 9, 10 );
-			shapePermutation.DefineCycle( 8, 11 );
+			shapePermutation.DefineCycle( 0, 6 );
+			shapePermutation.DefineCycle( 1, 7 );
+			shapePermutation.DefineCycle( 2, 8 );
+			shapePermutation.DefineCycle( 3, 9 );
+			shapePermutation.DefineCycle( 4, 10 );
+			shapePermutation.DefineCycle( 5, 11 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
-			// cFv
+			// cV
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 4, 9 );
-			shapePermutation.DefineCycle( 5, 8 );
+			shapePermutation.DefineCycle( 0, 5 );
+			shapePermutation.DefineCycle( 1, 4 );
+			shapePermutation.DefineCycle( 2, 3 );
 			shapePermutation.DefineCycle( 6, 11 );
 			shapePermutation.DefineCycle( 7, 10 );
+			shapePermutation.DefineCycle( 8, 9 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			shape = new Shape();
@@ -687,26 +699,32 @@ bool Puzzle::CreateShapes( void )
 
 			// dR
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 12, 10 );
-			shapePermutation.DefineCycle( 13, 11 );
-			shapePermutation.DefineCycle( 15, 9 );
-			shapePermutation.DefineCycle( 8, 14 );
+			shapePermutation.DefineCycle( 0, 27 );
+			shapePermutation.DefineCycle( 1, 26 );
+			shapePermutation.DefineCycle( 6, 21 );
+			shapePermutation.DefineCycle( 7, 20 );
+			shapePermutation.DefineCycle( 12, 17 );
+			shapePermutation.DefineCycle( 13, 16 );
 			shape->ccwRotationPermutation = shapePermutation;
 
-			// dRv
+			// dV
 			shapePermutation.DefineIdentity();
+			shapePermutation.DefineCycle( 0, 1 );
+			shapePermutation.DefineCycle( 6, 7 );
 			shapePermutation.DefineCycle( 12, 13 );
-			shapePermutation.DefineCycle( 14, 15 );
-			shapePermutation.DefineCycle( 8, 9 );
-			shapePermutation.DefineCycle( 11, 10 );
+			shapePermutation.DefineCycle( 16, 17 );
+			shapePermutation.DefineCycle( 20, 21 );
+			shapePermutation.DefineCycle( 26, 27 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
-			// dRh
+			// dH
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 12, 11 );
-			shapePermutation.DefineCycle( 8, 15 );
-			shapePermutation.DefineCycle( 9, 14 );
-			shapePermutation.DefineCycle( 10, 13 );
+			shapePermutation.DefineCycle( 0, 26 );
+			shapePermutation.DefineCycle( 6, 20 );
+			shapePermutation.DefineCycle( 12, 16 );
+			shapePermutation.DefineCycle( 1, 27 );
+			shapePermutation.DefineCycle( 7, 21 );
+			shapePermutation.DefineCycle( 13, 17 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			shape = new Shape();
@@ -715,26 +733,32 @@ bool Puzzle::CreateShapes( void )
 
 			// bR
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 6 );
-			shapePermutation.DefineCycle( 1, 7 );
-			shapePermutation.DefineCycle( 2, 4 );
-			shapePermutation.DefineCycle( 3, 5 );
+			shapePermutation.DefineCycle( 5, 30 );
+			shapePermutation.DefineCycle( 4, 31 );
+			shapePermutation.DefineCycle( 10, 25 );
+			shapePermutation.DefineCycle( 11, 24 );
+			shapePermutation.DefineCycle( 14, 19 );
+			shapePermutation.DefineCycle( 15, 18 );
 			shape->ccwRotationPermutation = shapePermutation;
 
-			// bFv
+			// bV
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 1 );
-			shapePermutation.DefineCycle( 2, 3 );
 			shapePermutation.DefineCycle( 4, 5 );
-			shapePermutation.DefineCycle( 6, 7 );
+			shapePermutation.DefineCycle( 10, 11 );
+			shapePermutation.DefineCycle( 14, 15 );
+			shapePermutation.DefineCycle( 18, 19 );
+			shapePermutation.DefineCycle( 24, 25 );
+			shapePermutation.DefineCycle( 30, 31 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
-			// bFh
+			// bH
 			shapePermutation.DefineIdentity();
-			shapePermutation.DefineCycle( 0, 7 );
-			shapePermutation.DefineCycle( 3, 4 );
-			shapePermutation.DefineCycle( 1, 6 );
-			shapePermutation.DefineCycle( 2, 5 );
+			shapePermutation.DefineCycle( 4, 30 );
+			shapePermutation.DefineCycle( 10, 24 );
+			shapePermutation.DefineCycle( 14, 18 );
+			shapePermutation.DefineCycle( 5, 31 );
+			shapePermutation.DefineCycle( 11, 25 );
+			shapePermutation.DefineCycle( 15, 19 );
 			shape->reflectionPermutationArray.push_back( shapePermutation );
 
 			return true;
