@@ -254,14 +254,14 @@ void Canvas::InitiateGrab( const wxPoint& mousePoint, Grab::Type grabType )
 	if( puzzle->autoRotationQueue.size() > 0 )
 		return;
 
-	/*if( readyToAdvanceToNextLevel )
+	if( readyToAdvanceToNextLevel )
 	{
 		puzzle->SetupLevel( puzzle->GetLevel() + 1 );
 		wxGetApp().UpdateFrameTitle();
 		readyToAdvanceToNextLevel = false;
 		Refresh();
 		return;
-	}*/
+	}
 
 	if( grab )
 		return;

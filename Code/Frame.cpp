@@ -119,7 +119,7 @@ void Frame::OnNewGame( wxCommandEvent& event )
 	if( wxGetApp().SetPuzzle( nullptr ) )
 	{
 		Puzzle* puzzle = new Puzzle();
-		puzzle->SetupLevel(6);
+		puzzle->SetupLevel(1);
 		wxGetApp().SetPuzzle( puzzle );
 		canvas->Refresh();
 	}
