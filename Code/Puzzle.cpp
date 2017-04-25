@@ -321,11 +321,14 @@ bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
 			if( fileDialog.ShowModal() != wxID_OK )
 				break;
 
+			wxBusyCursor busyCursor;
 			wxString path = fileDialog.GetPath();
 			wxFileName fileName( path );
 			fileName.SetExt( "xml" );
 			puzzleFile = fileName.GetFullPath();
 		}
+
+		wxBusyCursor busyCursor;
 
 		wxXmlNode* xmlTrianglePoolNode = new wxXmlNode( xmlRootNode, wxXML_ELEMENT_NODE, "TrianglePool" );
 
@@ -393,6 +396,8 @@ bool Puzzle::Load( wxString puzzleFile /*= wxEmptyString*/ )
 
 			puzzleFile = fileDialog.GetPath();
 		}
+
+		wxBusyCursor busyCursor;
 
 		wxXmlDocument xmlDocument;
 		if( !xmlDocument.Load( puzzleFile ) )
