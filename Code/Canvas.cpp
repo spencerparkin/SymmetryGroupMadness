@@ -327,17 +327,10 @@ void Canvas::FinalizeGrab( bool commitRotation /*= true*/ )
 
 	if( puzzle )
 	{
-		wxString statusBarText;
-
-		double percentageSolved = puzzle->CalculatePercentageSolved();
-		statusBarText = wxString::Format( "Percent solved: %%%1.2f", percentageSolved );
-
-		statusBarText += wxString::Format( " -- Triangles: %d", puzzle->GetTriangleCount() );
-
+		wxString statusBarText = wxString::Format( "Triangles: %d", puzzle->GetTriangleCount() );
 		wxGetApp().GetFrame()->GetStatusBar()->SetLabelText( statusBarText );
 
-		if( percentageSolved == 100.0 )
-			readyToAdvanceToNextLevel = true;
+		readyToAdvanceToNextLevel = puzzle->GetPermutation().IsIdentity();
 	}
 
 	Refresh();

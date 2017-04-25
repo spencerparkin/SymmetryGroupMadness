@@ -43,8 +43,6 @@ public:
 
 	mutable bool modified;
 
-	double CalculatePercentageSolved( void ) const;
-
 	int GetLevel( void ) const { return level; }
 	int GetTriangleCount( void ) const { return ( int )triangleList->size(); }
 	const ShapeList& GetShapeList( void ) { return shapeList; }

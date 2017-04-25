@@ -9,11 +9,6 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
-// BUG: The "percent solved" thing as not only a bit dumb, but, due probably to round-off error,
-//      it is also not always accurate enough to detect when the puzzle is actually solved.  If every
-//      puzzle had its permutation group encoded, then we could use that as a possibly fool-proof way
-//      to know when the puzzle is in the solved state.
-
 Frame::Frame( void ) : wxFrame( 0, wxID_ANY, "Symmetry Group Madness" ), timer( this, ID_Timer )
 {
 	wxMenu* gameMenu = new wxMenu();
@@ -81,7 +76,7 @@ void Frame::OnAbout( wxCommandEvent& event )
 	aboutDialogInfo.SetName( "Symmetry Group Madness" );
 	aboutDialogInfo.SetVersion( "1.0" );
 	aboutDialogInfo.SetDescription( "This program is free software and distributed under the MIT license." );
-	aboutDialogInfo.SetCopyright( "Copyright (C) 2016 Spencer T. Parkin <spencertparkin@gmail.com>" );
+	aboutDialogInfo.SetCopyright( "Copyright (C) 2016-2017 Spencer T. Parkin <spencertparkin@gmail.com>" );
 	//aboutDialogInfo.SetWebSite( "http://spencerparkin.github.io/SymmetryGroupMadness" );
 
 	wxAboutBox( aboutDialogInfo );

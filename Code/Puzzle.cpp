@@ -6,7 +6,6 @@
 #include "LineSegment.h"
 #include "Rectangle.h"
 #include "Texture.h"
-#include "BoxTree.h"
 #include "Application.h"
 #include "Random.h"
 #include "Frame.h"
@@ -304,31 +303,6 @@ Triangle* Puzzle::GetTriangleById( int triangleId )
 	}
 
 	return nullptr;
-}
-
-double Puzzle::CalculatePercentageSolved( void ) const
-{
-	GetRectangle();
-
-	BoxTreeNode* rootNode = GenerateBoxTree( *rectangle, rectangle->GetArea() / 10.0 );
-
-	for( TriangleList::const_iterator iter = triangleList->cbegin(); iter != triangleList->cend(); iter++ )
-	{
-		const Triangle* triangle = *iter;
-		for( int i = 0; i < 3; i++ )
-			rootNode->InsertVertex( triangle->vertex[i] );
-	}
-
-	BoxTreeStats boxTreeStats;
-	boxTreeStats.vertexGroupCount = 0;
-	boxTreeStats.solvedVertexGroupCount = 0;
-	rootNode->CalculateBoxTreeStats( boxTreeStats );
-
-	double percentageSolved = 100.0 * double( boxTreeStats.solvedVertexGroupCount ) / double( boxTreeStats.vertexGroupCount );
-
-	delete rootNode;
-
-	return percentageSolved;
 }
 
 bool Puzzle::Save( wxString puzzleFile /*= wxEmptyString*/ ) const
