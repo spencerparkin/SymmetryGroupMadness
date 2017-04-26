@@ -740,7 +740,8 @@ void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
 				int k = FindArrayOffset( allPointsArray, otherPoint );
 				wxASSERT( k >= 0 );
 
-				code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
+				if( j != k )
+					code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
 			}
 		}
 
