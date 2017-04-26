@@ -700,4 +700,87 @@ bool Puzzle::EnqueueSolution( void )
 	return true;
 }
 
+// This routine is not used in the final program, but is used along the way to generate code for the final program.
+void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
+{
+	VectorArray allPointsArray;
+
+	for( uint i = 0; i < pointArray.size(); i++ )
+	{
+		VectorArray orbitArray;
+		CalculatePointOrbit( pointArray[i], orbitArray );
+
+		for( uint j = 0; j < orbitArray.size(); j++ )
+			allPointsArray.push_back( orbitArray[j] );
+	}
+
+	wxString code;
+	int count = 0;
+
+	for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+	{
+		Shape* shape = *iter;
+
+		for( int i = -1; i < ( signed )shape->GetReflectionAxisArray().size(); i++ )
+		{
+			wxString permName;
+			if( i < 0 )
+				permName = wxString::Format( "R_%d;", count );
+			else
+				permName = wxString::Format( "F%d_%d;", i, count );
+
+			code += "Permutation " + permName + ";\n";
+
+			for( int j = 0; j < allPointsArray.size(); j++ )
+			{
+				c3ga::vectorE3GA point, otherPoint;
+				point = allPointsArray[j];
+				shape->TransformPoint( point, otherPoint, i );
+
+				int k = FindArrayOffset( allPointsArray, otherPoint );
+				wxASSERT( k >= 0 );
+
+				code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
+			}
+		}
+
+		count++;
+	}
+
+	// Break here in the debugger and capture the contents of the string!
+	code.clear();
+}
+
+void Puzzle::CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray )
+{
+	orbitArray.clear();
+
+	VectorArray pointQueue;
+	pointQueue.push_back( givenPoint );
+
+	while( pointQueue.size() > 0 )
+	{
+		c3ga::vectorE3GA point = pointQueue.back();
+		pointQueue.pop_back();
+
+		orbitArray.push_back( point );
+
+		for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+		{
+			Shape* shape = *iter;
+			if( !shape->ContainsPoint( point ) )
+				continue;
+
+			for( int i = -1; i < ( signed )shape->GetReflectionAxisArray().size(); i++ )
+			{
+				c3ga::vectorE3GA otherPoint;
+				shape->TransformPoint( point, otherPoint, i );
+
+				if( !( ArrayContains( orbitArray, otherPoint ) || ArrayContains( pointQueue, otherPoint ) ) )
+					pointQueue.push_back( otherPoint );
+			}
+		}
+	}
+}
+
 // Puzzle.cpp

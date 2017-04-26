@@ -29,6 +29,8 @@ public:
 	double GetRotationDelta( void ) const { return rotationDelta; }
 	const c3ga::vectorE3GA& GetPivotPoint( void ) const { return pivotPoint; }
 
+	bool TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform );
+
 	PermutationArray reflectionPermutationArray;
 	Permutation ccwRotationPermutation;
 

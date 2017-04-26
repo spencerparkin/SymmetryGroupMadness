@@ -43,4 +43,7 @@ void DeleteTriangleList( TriangleList& triangleList );
 void DeleteShapeList( ShapeList& shapeList );
 void DeleteTriangleMap( TriangleMap& triangleMap );
 
+bool ArrayContains( const VectorArray& pointArray, const c3ga::vectorE3GA& point, double eps = 1e-4 );
+int FindArrayOffset( const VectorArray& pointArray, const c3ga::vectorE3GA& point, double eps = 1e-4 );
+
 // Container.h

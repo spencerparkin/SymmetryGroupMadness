@@ -822,6 +822,33 @@ bool Puzzle::CreateShapes( void )
 
 			return true;
 		}
+		case 7:
+		{
+			Shape* shape = nullptr;
+
+			double x = 4.0;
+			double y = -4.0;
+			
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x, y, 0.0 ), 5.0, 5 );
+			shapeList.push_back( shape );
+
+			double angle = 2.0 * M_PI / 5.0;
+			double radius = 7.0;
+
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + radius * cos( angle ), y + radius * sin( angle ), 0.0 ), 5.0, 5, -M_PI / 5.0 );
+			shapeList.push_back( shape );
+
+			angle = 2.0 * ( 2.0 * M_PI / 5.0 );
+
+			shape = new Shape();
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + radius * cos( angle ), y + radius * sin( angle ), 0.0 ), 3.0, 5, -M_PI / 5.0 );
+			shapeList.push_back( shape );
+
+			return true;
+		}
+		// TODO: Concentric pentagons...?
 		case MAX_LEVELS:
 		{
 			// The "winner" level has no shapes so that there's no way to advance further.

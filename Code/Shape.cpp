@@ -165,4 +165,32 @@ void Shape::MakeRectangle( const c3ga::vectorE3GA& center, double width, double 
 	delete[] vertices;
 }
 
+// This routine or some of its logic probably should have been re-used by the Grab::ApplyRotation function, but oh well.
+bool Shape::TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform )
+{
+	if( !ContainsPoint( inPoint ) )
+		return false;
+
+	c3ga::vectorE3GA rotationAxis;
+	double rotationAngle;
+
+	if( transform < 0 )
+	{
+		rotationAxis.set( c3ga::vectorE3GA::coord_e1_e2_e3, 0.0, 0.0, 1.0 );
+		rotationAngle = rotationDelta;
+	}
+	else
+	{
+		rotationAxis = reflectionAxisArray[ transform ];
+		rotationAngle = M_PI;
+	}
+
+	c3ga::rotorE3GA rotor = c3ga::exp( rotationAxis * c3ga::I3 * ( -rotationAngle / 2.0 ) );
+
+	// There is a way to compute a versor (motor * rotor) in CGA to do this, but whatever.
+	outPoint = pivotPoint + c3ga::applyUnitVersor( rotor, inPoint - pivotPoint );
+
+	return true;
+}
+
 // Shape.cpp
