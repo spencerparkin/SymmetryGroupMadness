@@ -1,5 +1,6 @@
 // Puzzle.cpp
 
+#include <rapidjson/writer.h>
 #include "Puzzle.h"
 #include "Shape.h"
 #include "Triangle.h"
@@ -14,7 +15,6 @@
 #include <wx/filedlg.h>
 #include <wx/xml/xml.h>
 #include <wx/filename.h>
-#include <rapidjson/writer.h>
 #include <StabilizerChain.h>
 
 Puzzle::Puzzle( void )

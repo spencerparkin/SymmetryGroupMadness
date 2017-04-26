@@ -3,8 +3,13 @@
 import os
 
 obj_env = Environment( parse_flags = '!wx-config --cxxflags' )
-obj_env.Append( CCFLAGS = '--std=c++11' )
+obj_env.Append( CCFLAGS = '--std=c++14' )
+obj_env.Append( CCFLAGS = '-DLINUX' )
 obj_env.Append( CCFLAGS = '-ggdb' )
+obj_env.Append( CCFLAGS = '-I../PermutationGroup/Code' )
+obj_env.Append( CCFLAGS = '-I../../PermutationGroup/Code' )
+obj_env.Append( CCFLAGS = '-I../rapidjson/include' )
+obj_env.Append( CCFLAGS = '-I../../rapidjson/include' )
 
 cpp_source_list = Glob( 'Code/*.cpp' ) + Glob( 'Code/c3ga/*.cpp' )
 h_source_list = Glob( 'Code/*.h' ) + Glob( 'Code/c3ga/*.h' )
@@ -19,6 +24,8 @@ prog_env = Environment( PROGNAME = 'SymmetryGroupMadness', parse_flags = '!wx-co
 prog_env.Append( CCFLAGS = '-ggdb' )
 prog_env.Append( LIBS = '-lGL' )
 prog_env.Append( LIBS = '-lGLU' )
+prog_env.Append( LIBPATH = [ '../PermutationGroup' ] )
+prog_env.Append( LIBS = '-lPermutationGroup' )
 prog = prog_env.Program( '$PROGNAME', source = object_list )
 
 dest_dir = '/usr'

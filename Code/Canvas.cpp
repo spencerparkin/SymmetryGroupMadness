@@ -27,7 +27,7 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 	// I really don't understand why I need to do this.
 	// The animation rate should be frame-rate independent.
 	// Whatever.  This program is a peice of crap anyway.
-	animationRate = 10 * M_PI;
+	animationRate = 20 * M_PI;
 #else
 	animationRate = M_PI;
 #endif
@@ -63,10 +63,7 @@ bool Canvas::AnimateAutoRotations( void )
 {
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( !puzzle || puzzle->autoRotationQueue.size() == 0 )
-	{
-		lastFrameTime = 0.0;
 		return false;
-	}
 
 	double eps = 1e-3;
 
@@ -119,13 +116,11 @@ bool Canvas::AnimateAutoRotations( void )
 
 void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*/, int* triangleId /*= nullptr*/, bool pickShapes /*= true*/ )
 {
-	( void )AnimateAutoRotations();
-
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 
 	BindContext();
 
-	if( puzzle && puzzle->autoRotationQueue.size() > 0 && renderMode == GL_RENDER )
+	if( renderMode == GL_RENDER )
 	{
 		double currentFrameTime = double( clock() ) / double( CLOCKS_PER_SEC );
 		if( lastFrameTime != 0.0 )
@@ -136,6 +131,8 @@ void Canvas::Render( GLenum renderMode, const wxPoint* pickingPoint /*= nullptr*
 
 		lastFrameTime = currentFrameTime;
 	}
+
+	( void )AnimateAutoRotations();
 
 	glClearColor( 0.f, 0.f, 0.f, 1.f );
 
