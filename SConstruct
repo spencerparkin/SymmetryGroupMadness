@@ -5,7 +5,7 @@ import os
 obj_env = Environment( parse_flags = '!wx-config --cxxflags' )
 obj_env.Append( CCFLAGS = '--std=c++14' )
 obj_env.Append( CCFLAGS = '-DLINUX' )
-obj_env.Append( CCFLAGS = '-ggdb' )
+#obj_env.Append( CCFLAGS = '-ggdb' )
 obj_env.Append( CCFLAGS = '-I../PermutationGroup/Code' )
 obj_env.Append( CCFLAGS = '-I../../permutationgroup/install/include' )
 obj_env.Append( CCFLAGS = '-I../rapidjson/include' )
@@ -42,5 +42,5 @@ install_env.Install( '$SHARE/SymmetryGroupMadness/StabChains', stabchain_list )
 install_env.Install( '$BIN', prog )
 install_env.Alias( 'install', [
   '$BIN',
-  '$SHARE/SymmetryGroupMadness/Textures'
+  '$SHARE/SymmetryGroupMadness/Textures',
   '$SHARE/SymmetryGroupMadness/StabChains' ] )
