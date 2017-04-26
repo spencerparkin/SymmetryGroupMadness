@@ -35,7 +35,12 @@ if 'DESTDIR' in os.environ:
 install_env = Environment( BIN = dest_dir + '/bin', SHARE = dest_dir + '/share' )
 
 texture_list = Glob( 'Textures/*.*' )
+stabchain_list = Glob( 'StabChains/*.txt' )
 
 install_env.Install( '$SHARE/SymmetryGroupMadness/Textures', texture_list )
+install_env.Install( '$SHARE/SymmetryGroupMadness/StabChains', stabchain_list )
 install_env.Install( '$BIN', prog )
-install_env.Alias( 'install', [ '$BIN', '$SHARE/SymmetryGroupMadness/Textures' ] )
+install_env.Alias( 'install', [
+  '$BIN',
+  '$SHARE/SymmetryGroupMadness/Textures'
+  '$SHARE/SymmetryGroupMadness/StabChains' ] )

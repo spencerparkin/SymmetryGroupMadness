@@ -1,5 +1,5 @@
 name: symgrpmad
-version: 1.0
+version: 2.0
 summary: A game based upon the idea of overlapping symmetry groups.
 description: This is a game based upon the idea of overlapping symmetry groups.  It is similar in nature to twisty puzzles such as Rubik's cube, but it takes place in the plane.
 confinement: strict
@@ -7,11 +7,24 @@ confinement: strict
 apps:
   symgrpmad:
     command: env UBUNTU_MENUPROXY=0 desktop-launch $SNAP/bin/SymmetryGroupMadness
-    plugs: [home, x11, unity7]
+    plugs: [home, x11, unity7, opengl]
 
 parts:
   symgrpmad:
     plugin: scons
     source: https://github.com/spencerparkin/SymmetryGroupMadness.git
     source-branch: stable-release
-    after: [desktop-gtk3]
+    after:
+      - desktop-gtk3
+      - permutationgroup
+      - rapidjson
+
+  permutationgroup:
+    plugin: scons
+    source: https://github.com/spencerparkin/PermutationGroup.git
+    source-branch: master
+
+  rapidjson:
+    plugin: dump
+    source: https://github.com/miloyip/rapidjson.git
+    source-branch: master
