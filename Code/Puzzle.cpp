@@ -747,6 +747,29 @@ void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
 		count++;
 	}
 
+	// TODO: We also need to print a base for generating the stabilizer chain.
+	//       It is interesting to consider what base should be chosen.  A paper
+	//       by Puschel, et. al. talks about a method, but all I recall is them
+	//       doing is giving an algorithm with little explanation.  In any case,
+	//       I should revisit the paper.  It seems to me that a good base (perhaps
+	//       the best kind?) is one that produces as short a stabilizer chain as
+	//       possible.  How does the stabilizer chain length very with base?  I
+	//       might consider expiramenting with this.  My intuition says that the
+	//       first base point should be chosen as any one that is a member of the
+	//       largest equivilance class in the domain for the permutation group.
+	//       This maximizes the first transversal set in the chain.  The next base
+	//       point needs to be likewise chosen to maximize the transversal set, but
+	//       it's not immediately clear which point to choose.  What is the domain
+	//       for the first subgroup in the chain?  It might be as simple as the
+	//       original domain with the equivilance class for the first base point taken
+	//       out.  In the case, make a similar choice, but notice that the size of
+	//       the transversal generated for the first subgroup won't necessarily be
+	//       the size of the equivilance class as it was in the first case.  This is
+	//       because we're working in a stabilizer subgroup, not the original group.
+	//       It would be interesting if something rigorous could be proven about
+	//       the base chosen and the length of the stabilizer chain.  Does the literature
+	//       already say something about this?
+
 	// Break here in the debugger and capture the contents of the string!
 	code.clear();
 }
