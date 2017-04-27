@@ -63,7 +63,7 @@ bool Shape::ContainsPoint( const c3ga::vectorE3GA& point ) const
 	return false;
 }
 
-void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle /*= 0.0*/ )
+void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle /*= 0.0*/, c3ga::vectorE3GA* edgePoint /*= nullptr*/ )
 {
 	DeleteTriangleList( triangleList );
 	reflectionAxisArray.clear();
@@ -111,6 +111,14 @@ void Shape::MakePolygon( const c3ga::vectorE3GA& center, double radius, int side
 	}
 
 	delete[] vertices;
+
+	if( edgePoint )
+	{
+		double height = radius * sqrt( 0.5 + 0.25 * cos( rotationDelta ) );
+		*edgePoint = center;
+		edgePoint->m_e1 += height * cos( rotationDelta / 2.0 + tiltAngle ) * 0.95;
+		edgePoint->m_e2 += height * sin( rotationDelta / 2.0 + tiltAngle ) * 0.95;
+	}
 }
 
 void Shape::MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle /*= 0.0*/ )
@@ -166,7 +174,7 @@ void Shape::MakeRectangle( const c3ga::vectorE3GA& center, double width, double 
 }
 
 // This routine or some of its logic probably should have been re-used by the Grab::ApplyRotation function, but oh well.
-bool Shape::TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform )
+bool Shape::TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform ) const
 {
 	if( !ContainsPoint( inPoint ) )
 		return false;

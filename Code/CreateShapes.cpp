@@ -11,6 +11,7 @@ bool Puzzle::CreateShapes( void )
 	DeleteShapeList( shapeList );
 
 	permutation.DefineIdentity();
+	pointArray.clear();
 
 	switch( level )
 	{
@@ -825,26 +826,47 @@ bool Puzzle::CreateShapes( void )
 		case 7:
 		{
 			Shape* shape = nullptr;
+			c3ga::vectorE3GA point;
 
-			double x = 4.0;
+			double x = 2.0;
 			double y = -4.0;
 			
 			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x, y, 0.0 ), 5.0, 5 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x, y, 0.0 ), 5.0, 5, 0.0, &point );
 			shapeList.push_back( shape );
+			pointArray.push_back( point );
 
 			double angle = 2.0 * M_PI / 5.0;
-			double radius = 7.0;
+
+			c3ga::vectorE3GA vertex;
+			vertex.set_e1( x + 5.0 * cos( angle ) );
+			vertex.set_e2( y + 5.0 * sin( angle ) );
+			vertex.set_e3( 0.0 );
+			point = point + 0.3 * ( vertex - point );
+			pointArray.push_back( point );
+
+			angle = 4.0 * M_PI / 5.0;
+			vertex.set_e1( x + 5.0 * cos( angle ) );
+			vertex.set_e2( y + 5.0 * sin( angle ) );
+			point = point + 0.93 * ( vertex - point );
+			pointArray.push_back( point );
+
+			angle = 2.0 * M_PI / 5.0;
+			double distance = 7.0;
 
 			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + radius * cos( angle ), y + radius * sin( angle ), 0.0 ), 5.0, 5, -M_PI / 5.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + distance * cos( angle ), y + distance * sin( angle ), 0.0 ), 5.0, 5, -M_PI / 5.0, &point );
 			shapeList.push_back( shape );
+			pointArray.push_back( point );
 
 			angle = 2.0 * ( 2.0 * M_PI / 5.0 );
 
 			shape = new Shape();
-			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + radius * cos( angle ), y + radius * sin( angle ), 0.0 ), 3.0, 5, -M_PI / 5.0 );
+			shape->MakePolygon( c3ga::vectorE3GA( c3ga::vectorE3GA::coord_e1_e2_e3, x + distance * cos( angle ), y + distance * sin( angle ), 0.0 ), 3.0, 5, -M_PI / 5.0, &point );
 			shapeList.push_back( shape );
+			pointArray.push_back( point );
+
+			wxString code = CalculateAndPrintGenerators();
 
 			return true;
 		}

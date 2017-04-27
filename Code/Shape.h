@@ -21,7 +21,7 @@ public:
 	bool OwnsTriangle( int triangleId ) const;
 	bool ContainsPoint( const c3ga::vectorE3GA& point ) const;
 
-	void MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle = 0.0 );
+	void MakePolygon( const c3ga::vectorE3GA& center, double radius, int sides, double tiltAngle = 0.0, c3ga::vectorE3GA* edgePoint = nullptr );
 	void MakeStar( const c3ga::vectorE3GA& center, double innerRadius, double outerRadius, int spikes, double tiltAngle = 0.0 );
 	void MakeRectangle( const c3ga::vectorE3GA& center, double width, double height, double tiltAngle = 0.0 );
 
@@ -29,7 +29,7 @@ public:
 	double GetRotationDelta( void ) const { return rotationDelta; }
 	const c3ga::vectorE3GA& GetPivotPoint( void ) const { return pivotPoint; }
 
-	bool TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform );
+	bool TransformPoint( const c3ga::vectorE3GA& inPoint, c3ga::vectorE3GA& outPoint, int transform ) const;
 
 	PermutationArray reflectionPermutationArray;
 	Permutation ccwRotationPermutation;

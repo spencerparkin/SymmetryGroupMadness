@@ -191,6 +191,9 @@ void Puzzle::SortForRender( void )
 	triangleList->sort( CompareFunctor() );
 }
 
+// TODO: It wouldn't be hard to render an outline for the shape that the mouse is hovering over.
+//       Just keep a list of line segments of the triangles making up the shape.  Add a line segment
+//       if it is not there, or remove it if it is already there.  Render the net effect.
 void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 {
 	if( renderMode == GL_RENDER )
@@ -208,6 +211,22 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 		}
 
 		glEnd();
+
+		if( pointArray.size() > 0 )
+		{
+			glPointSize( 5.0 );
+			glColor3f( 1.f, 0.f, 0.f );
+			glDisable( GL_TEXTURE_2D );
+			glBegin( GL_POINTS );
+			
+			for( int i = 0; i < pointArray.size(); i++ )
+			{
+				const c3ga::vectorE3GA& point = pointArray[i];
+				glVertex2d( point.get_e1(), point.get_e2() );
+			}
+
+			glEnd();
+		}
 	}
 	else if( renderMode == GL_SELECT )
 	{
@@ -701,10 +720,14 @@ bool Puzzle::EnqueueSolution( void )
 }
 
 // This routine is not used in the final program, but is used along the way to generate code for the final program.
-void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
+wxString Puzzle::CalculateAndPrintGenerators( void ) const
 {
 	VectorArray allPointsArray;
 
+	// TODO: What's a good base for the stabilizer chain?  See paper by Puschel again?
+
+	// The point array should be populated with one member from each equivilance class of the domain of the permutation group.
+	// Two points in the domain are equivilant if there exists an element of the group taking one point to the other.
 	for( uint i = 0; i < pointArray.size(); i++ )
 	{
 		VectorArray orbitArray;
@@ -717,17 +740,17 @@ void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
 	wxString code;
 	int count = 0;
 
-	for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+	for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
 	{
-		Shape* shape = *iter;
+		const Shape* shape = *iter;
 
 		for( int i = -1; i < ( signed )shape->GetReflectionAxisArray().size(); i++ )
 		{
 			wxString permName;
 			if( i < 0 )
-				permName = wxString::Format( "R_%d;", count );
+				permName = wxString::Format( "R_%d", count );
 			else
-				permName = wxString::Format( "F%d_%d;", i, count );
+				permName = wxString::Format( "F%d_%d", i, count );
 
 			code += "Permutation " + permName + ";\n";
 
@@ -735,7 +758,8 @@ void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
 			{
 				c3ga::vectorE3GA point, otherPoint;
 				point = allPointsArray[j];
-				shape->TransformPoint( point, otherPoint, i );
+				if( !shape->TransformPoint( point, otherPoint, i ) )
+					continue;
 
 				int k = FindArrayOffset( allPointsArray, otherPoint );
 				wxASSERT( k >= 0 );
@@ -743,39 +767,17 @@ void Puzzle::CalculateAndPrintGenerators( const VectorArray& pointArray )
 				if( j != k )
 					code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
 			}
+
+			code += "\n";
 		}
 
 		count++;
 	}
 
-	// TODO: We also need to print a base for generating the stabilizer chain.
-	//       It is interesting to consider what base should be chosen.  A paper
-	//       by Puschel, et. al. talks about a method, but all I recall is them
-	//       doing is giving an algorithm with little explanation.  In any case,
-	//       I should revisit the paper.  It seems to me that a good base (perhaps
-	//       the best kind?) is one that produces as short a stabilizer chain as
-	//       possible.  How does the stabilizer chain length very with base?  I
-	//       might consider expiramenting with this.  My intuition says that the
-	//       first base point should be chosen as any one that is a member of the
-	//       largest equivilance class in the domain for the permutation group.
-	//       This maximizes the first transversal set in the chain.  The next base
-	//       point needs to be likewise chosen to maximize the transversal set, but
-	//       it's not immediately clear which point to choose.  What is the domain
-	//       for the first subgroup in the chain?  It might be as simple as the
-	//       original domain with the equivilance class for the first base point taken
-	//       out.  In the case, make a similar choice, but notice that the size of
-	//       the transversal generated for the first subgroup won't necessarily be
-	//       the size of the equivilance class as it was in the first case.  This is
-	//       because we're working in a stabilizer subgroup, not the original group.
-	//       It would be interesting if something rigorous could be proven about
-	//       the base chosen and the length of the stabilizer chain.  Does the literature
-	//       already say something about this?
-
-	// Break here in the debugger and capture the contents of the string!
-	code.clear();
+	return code;
 }
 
-void Puzzle::CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray )
+void Puzzle::CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray ) const
 {
 	orbitArray.clear();
 
@@ -789,9 +791,9 @@ void Puzzle::CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArra
 
 		orbitArray.push_back( point );
 
-		for( ShapeList::iterator iter = shapeList.begin(); iter != shapeList.end(); iter++ )
+		for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
 		{
-			Shape* shape = *iter;
+			const Shape* shape = *iter;
 			if( !shape->ContainsPoint( point ) )
 				continue;
 

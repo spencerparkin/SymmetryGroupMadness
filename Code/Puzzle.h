@@ -50,8 +50,8 @@ public:
 
 	bool EnqueueSolution( void );
 
-	void CalculateAndPrintGenerators( const VectorArray& pointArray );
-	void CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray );
+	wxString CalculateAndPrintGenerators( void ) const;
+	void CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray ) const;
 
 private:
 
@@ -69,6 +69,7 @@ private:
 	int level;
 	mutable Rectangle_* rectangle;
 	Texture* texture;
+	VectorArray pointArray;
 };
 
 // Puzzle.h
