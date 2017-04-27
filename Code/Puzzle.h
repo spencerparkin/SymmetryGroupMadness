@@ -50,7 +50,7 @@ public:
 
 	bool EnqueueSolution( void );
 
-	wxString CalculateAndPrintGenerators( void ) const;
+	wxString CalculateAndPrintGenerators( bool forStabChainGeneration ) const;
 	void CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray ) const;
 
 private:

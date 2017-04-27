@@ -720,11 +720,13 @@ bool Puzzle::EnqueueSolution( void )
 }
 
 // This routine is not used in the final program, but is used along the way to generate code for the final program.
-wxString Puzzle::CalculateAndPrintGenerators( void ) const
+wxString Puzzle::CalculateAndPrintGenerators( bool forStabChainGeneration ) const
 {
 	VectorArray allPointsArray;
 
 	// TODO: What's a good base for the stabilizer chain?  See paper by Puschel again?
+	//       We don't need to compute a base here.  We want to compute the generators
+	//       in such a way that {0,1,2,3,...} is the desired/best base.
 
 	// The point array should be populated with one member from each equivilance class of the domain of the permutation group.
 	// Two points in the domain are equivilant if there exists an element of the group taking one point to the other.
@@ -766,6 +768,16 @@ wxString Puzzle::CalculateAndPrintGenerators( void ) const
 
 				if( j != k )
 					code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
+			}
+
+			if( forStabChainGeneration )
+				code += "generatorSet.insert( " + permName + " );\n";
+			else
+			{
+				if( i < 0 )
+					code += wxString::Format( "shape%d->ccwRotationPermutation = R_%d;\n", count, count );
+				else
+					code += wxString::Format( "shape%d->reflectionPermutationArray.push_back( F%d_%d );\n", count, i, count );
 			}
 
 			code += "\n";
