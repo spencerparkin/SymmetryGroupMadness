@@ -83,7 +83,8 @@ bool Canvas::AnimateAutoRotations( void )
 		}
 
 		puzzle->autoRotationQueue.erase( iter );
-		wxGetApp().GetFrame()->GetStatusBar()->SetStatusText( wxString::Format( "Move queue size: %d", puzzle->autoRotationQueue.size() ) );
+		int size = ( int )puzzle->autoRotationQueue.size();
+		wxGetApp().GetFrame()->GetStatusBar()->SetStatusText( wxString::Format( "Move queue size: %d", size ) );
 	}
 	else
 	{
