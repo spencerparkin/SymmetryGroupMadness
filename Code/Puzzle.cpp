@@ -560,7 +560,7 @@ bool Puzzle::SetupLevel( int level )
 	if( level < 3 )
 		EnqueueScrambles( 2, 4321 );
 	else
-		EnqueueScrambles( 10, 0 );
+		EnqueueScrambles( 40, 0 );
 
 	return true;
 }
@@ -624,8 +624,8 @@ bool Puzzle::EnqueueSolution( void )
 	if( !wxFileExists( stabChainFilePath ) )
 	{
 		stabChainFilePath = wxString( wxGetenv( "SNAP" ) ) + "/share/SymmetryGroupMadness/StabChains/" + stabChainFile;
-		if( !wxFileExists( stabChainFile ) )
-			return false;
+		//if( !wxFileExists( stabChainFile ) )
+		//	return false;
 	}
 
 	wxFile file( stabChainFilePath );
