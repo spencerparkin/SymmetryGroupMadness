@@ -14,6 +14,13 @@ parts:
     plugin: scons
     source: https://github.com/spencerparkin/SymmetryGroupMadness.git
     source-branch: stable-release
+    prime:
+      - usr/lib/x86_64-linux-gnu/libmirclient.so.9
+      - usr/lib/x86_64-linux-gnu/libmircommon.so.9
+      - usr/lib/x86_64-linux-gnu/libmirprotobuf.so.9
+      - bin/SymmetryGroupMadness
+      - share/SymmetryGroupMadness/Textures/*
+      - share/SymmetryGroupMadness/StabChains/*
     after:
       - desktop-gtk3
       - permutationgroup
