@@ -191,6 +191,9 @@ void Puzzle::SortForRender( void )
 	triangleList->sort( CompareFunctor() );
 }
 
+// TODO: It wouldn't be hard to render an outline for the shape that the mouse is hovering over.
+//       Just keep a list of line segments of the triangles making up the shape.  Add a line segment
+//       if it is not there, or remove it if it is already there.  Render the net effect.
 void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 {
 	if( renderMode == GL_RENDER )
@@ -208,6 +211,22 @@ void Puzzle::Render( int renderMode, bool pickShapes /*= true*/ ) const
 		}
 
 		glEnd();
+
+		if( pointArray.size() > 0 )
+		{
+			glPointSize( 5.0 );
+			glColor3f( 1.f, 0.f, 0.f );
+			glDisable( GL_TEXTURE_2D );
+			glBegin( GL_POINTS );
+			
+			for( int i = 0; i < pointArray.size(); i++ )
+			{
+				const c3ga::vectorE3GA& point = pointArray[i];
+				glVertex2d( point.get_e1(), point.get_e2() );
+			}
+
+			glEnd();
+		}
 	}
 	else if( renderMode == GL_SELECT )
 	{
@@ -698,6 +717,108 @@ bool Puzzle::EnqueueSolution( void )
 	}
 
 	return true;
+}
+
+// This routine is not used in the final program, but is used along the way to generate code for the final program.
+wxString Puzzle::CalculateAndPrintGenerators( bool forStabChainGeneration ) const
+{
+	VectorArray allPointsArray;
+
+	// TODO: What's a good base for the stabilizer chain?  See paper by Puschel again?
+	//       We don't need to compute a base here.  We want to compute the generators
+	//       in such a way that {0,1,2,3,...} is the desired/best base.
+
+	// The point array should be populated with one member from each equivilance class of the domain of the permutation group.
+	// Two points in the domain are equivilant if there exists an element of the group taking one point to the other.
+	for( uint i = 0; i < pointArray.size(); i++ )
+	{
+		VectorArray orbitArray;
+		CalculatePointOrbit( pointArray[i], orbitArray );
+
+		for( uint j = 0; j < orbitArray.size(); j++ )
+			allPointsArray.push_back( orbitArray[j] );
+	}
+
+	wxString code;
+	int count = 0;
+
+	for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
+	{
+		const Shape* shape = *iter;
+
+		for( int i = -1; i < ( signed )shape->GetReflectionAxisArray().size(); i++ )
+		{
+			wxString permName;
+			if( i < 0 )
+				permName = wxString::Format( "R_%d", count );
+			else
+				permName = wxString::Format( "F%d_%d", i, count );
+
+			code += "Permutation " + permName + ";\n";
+
+			for( int j = 0; j < allPointsArray.size(); j++ )
+			{
+				c3ga::vectorE3GA point, otherPoint;
+				point = allPointsArray[j];
+				if( !shape->TransformPoint( point, otherPoint, i ) )
+					continue;
+
+				int k = FindArrayOffset( allPointsArray, otherPoint );
+				wxASSERT( k >= 0 );
+
+				if( j != k )
+					code += permName + wxString::Format( ".Define( %d, %d );\n", j, k );
+			}
+
+			if( forStabChainGeneration )
+				code += "generatorSet.insert( " + permName + " );\n";
+			else
+			{
+				if( i < 0 )
+					code += wxString::Format( "shape%d->ccwRotationPermutation = R_%d;\n", count, count );
+				else
+					code += wxString::Format( "shape%d->reflectionPermutationArray.push_back( F%d_%d );\n", count, i, count );
+			}
+
+			code += "\n";
+		}
+
+		count++;
+	}
+
+	return code;
+}
+
+void Puzzle::CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray ) const
+{
+	orbitArray.clear();
+
+	VectorArray pointQueue;
+	pointQueue.push_back( givenPoint );
+
+	while( pointQueue.size() > 0 )
+	{
+		c3ga::vectorE3GA point = pointQueue.back();
+		pointQueue.pop_back();
+
+		orbitArray.push_back( point );
+
+		for( ShapeList::const_iterator iter = shapeList.cbegin(); iter != shapeList.cend(); iter++ )
+		{
+			const Shape* shape = *iter;
+			if( !shape->ContainsPoint( point ) )
+				continue;
+
+			for( int i = -1; i < ( signed )shape->GetReflectionAxisArray().size(); i++ )
+			{
+				c3ga::vectorE3GA otherPoint;
+				shape->TransformPoint( point, otherPoint, i );
+
+				if( !( ArrayContains( orbitArray, otherPoint ) || ArrayContains( pointQueue, otherPoint ) ) )
+					pointQueue.push_back( otherPoint );
+			}
+		}
+	}
 }
 
 // Puzzle.cpp

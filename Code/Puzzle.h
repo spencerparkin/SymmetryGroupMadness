@@ -13,11 +13,6 @@ class Triangle;
 class Rectangle_;
 class Texture;
 
-// The puzzle itself could actually be a great tool for coming up with the set of permutation generators
-// that describe the group of the puzzle.  Starting with the right set of points, we could discover their
-// entire orbits, then label all points, then perform each basic symmetry to get each generator.  For now,
-// though, I'm just going to create these by hand.  In a few cases I've had to write a Python script for
-// puzzles who's groups are big enough to be too error prone to do by hand.
 class Puzzle
 {
 public:
@@ -49,11 +44,14 @@ public:
 	const Rectangle_* GetRectangle( void ) const;
 	Permutation& GetPermutation( void ) { return permutation; }
 
-	enum { MAX_LEVELS = 7, MAX_IMAGES = 14 };
+	enum { MAX_LEVELS = 8, MAX_IMAGES = 14 };
 
 	AutoRotationList autoRotationQueue;
 
 	bool EnqueueSolution( void );
+
+	wxString CalculateAndPrintGenerators( bool forStabChainGeneration ) const;
+	void CalculatePointOrbit( const c3ga::vectorE3GA& givenPoint, VectorArray& orbitArray ) const;
 
 private:
 
@@ -71,6 +69,7 @@ private:
 	int level;
 	mutable Rectangle_* rectangle;
 	Texture* texture;
+	VectorArray pointArray;
 };
 
 // Puzzle.h

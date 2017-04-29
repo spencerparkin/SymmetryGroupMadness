@@ -49,4 +49,22 @@ void DeleteTriangleMap( TriangleMap& triangleMap )
 	}
 }
 
+bool ArrayContains( const VectorArray& pointArray, const c3ga::vectorE3GA& point, double eps /*= 1e-4*/ )
+{
+	int offset = FindArrayOffset( pointArray, point, eps );
+	return( offset >= 0 ? true : false );
+}
+
+int FindArrayOffset( const VectorArray& pointArray, const c3ga::vectorE3GA& point, double eps /*= 1e-4*/ )
+{
+	for( int i = 0; i < pointArray.size(); i++ )
+	{
+		double len = c3ga::norm( pointArray[i] - point );
+		if( len < eps )
+			return i;
+	}
+
+	return -1;
+}
+
 // Container.cpp
