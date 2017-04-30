@@ -19,6 +19,8 @@ public:
 
 	bool AnimateAutoRotations( void );
 
+	bool canAnimate;
+
 private:
 
 	void Render( GLenum renderMode, const wxPoint* pickingPoint = nullptr, int* triangleId = nullptr, bool pickShapes = true );

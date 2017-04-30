@@ -19,6 +19,7 @@ Canvas::Canvas( wxWindow* parent ) : wxGLCanvas( parent, wxID_ANY, attributeList
 
 	grab = nullptr;
 
+	canAnimate = true;
 	readyToAdvanceToNextLevel = false;
 
 	frameRate = 60.0;
@@ -61,6 +62,9 @@ void Canvas::BindContext( void )
 
 bool Canvas::AnimateAutoRotations( void )
 {
+	if( !canAnimate )
+		return false;
+	
 	Puzzle* puzzle = wxGetApp().GetPuzzle();
 	if( !puzzle || puzzle->autoRotationQueue.size() == 0 )
 		return false;
