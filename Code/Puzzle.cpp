@@ -114,6 +114,18 @@ const Rectangle_* Puzzle::GetRectangle( void ) const
 
 // Some sort of compression would be a nice optimization for puzzles that get heavy on the triangles.
 // In some cases, however, new triangles, I believe, are being created unnecessarily.
+// I want to add a comment here that since writing this (quite some time ago), I believe there is
+// a much better way to implement this game by using a graph-theory-like data-structure instead of
+// cutting up a triangle mesh.  Graphs can be combined into one and then sub-graphs read out of the
+// result.  Planar graphs (which happen to also be polygons) can be tessellated before rendering.
+// Triangle UVs can be calculated from transforms.  For at least one reason, this is a better approach,
+// because it drastically reduces the number of polygons, even after tessellation, that need to be
+// processed during cutting and rendering, and so, much more interesting and elaborate puzzles could be
+// constructed without worry of bogging down the puzzle engine.  But alas, I don't feel I have the time
+// to go back and revisit this kind of program, or enough motivation to do so anyway.  When using this
+// program, certain puzzles use a rediculous number of triangles when it is clear that no where near that
+// many triangles is needed for the rendering or mechanics of the puzzle.  A better puzzle engine that
+// is graph theory based is certainly possible and easily consievable.
 bool Puzzle::GrabShape( const Shape& shape, TriangleList& grabbedTriangleList )
 {
 	modified = true;
